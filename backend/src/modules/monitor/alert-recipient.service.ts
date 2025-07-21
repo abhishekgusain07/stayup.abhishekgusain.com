@@ -1,0 +1,210 @@
+import { Injectable, Inject, BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
+import { eq, and } from 'drizzle-orm';
+import { nanoid } from 'nanoid';
+
+import { DATABASE_CONNECTION } from '../../database/database.module';
+import { monitors, monitorAlertRecipients } from '../../database/schema';
+import { 
+  CreateAlertRecipientSchema, 
+  getSubscriptionLimits,
+  type CreateAlertRecipient,
+  type AlertRecipient
+} from '../../types/monitoring-types';
+
+@Injectable()
+export class AlertRecipientService {
+  constructor(
+    @Inject(DATABASE_CONNECTION) private db: any,
+  ) {}
+
+  async createAlertRecipient(
+    monitorId: string,
+    userId: string,
+    data: CreateAlertRecipient,
+    userSubscription: string
+  ): Promise<AlertRecipient> {
+    // Validate input
+    const validatedData = CreateAlertRecipientSchema.parse(data);
+
+    // Verify monitor ownership
+    const monitor = await this.db
+      .select()
+      .from(monitors)
+      .where(
+        and(
+          eq(monitors.id, monitorId),
+          eq(monitors.userId, userId),
+          eq(monitors.isDeleted, false)
+        )
+      );
+
+    if (monitor.length === 0) {
+      throw new NotFoundException('Monitor not found');
+    }
+
+    // Check subscription limits following uptimeMonitor pattern
+    const limits = getSubscriptionLimits(userSubscription);
+    
+    const currentRecipients = await this.db
+      .select()
+      .from(monitorAlertRecipients)
+      .where(
+        and(
+          eq(monitorAlertRecipients.monitorId, monitorId),
+          eq(monitorAlertRecipients.isActive, true)
+        )
+      );
+
+    if (limits.alertRecipients !== -1 && currentRecipients.length >= limits.alertRecipients) {
+      throw new ForbiddenException(
+        `Alert recipient limit reached. Your ${userSubscription} plan allows ${limits.alertRecipients} alert recipients per monitor. Upgrade to add more.`
+      );
+    }
+
+    // Check if email already exists for this monitor
+    const existingRecipient = await this.db
+      .select()
+      .from(monitorAlertRecipients)
+      .where(
+        and(
+          eq(monitorAlertRecipients.monitorId, monitorId),
+          eq(monitorAlertRecipients.email, validatedData.email)
+        )
+      );
+
+    if (existingRecipient.length > 0) {
+      throw new BadRequestException('This email is already configured for alerts on this monitor');
+    }
+
+    // Create alert recipient
+    const newRecipient = await this.db
+      .insert(monitorAlertRecipients)
+      .values({
+        id: nanoid(),
+        monitorId,
+        email: validatedData.email,
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .returning();
+
+    return newRecipient[0];
+  }
+
+  async getAlertRecipients(monitorId: string, userId: string): Promise<AlertRecipient[]> {
+    // Verify monitor ownership
+    const monitor = await this.db
+      .select()
+      .from(monitors)
+      .where(
+        and(
+          eq(monitors.id, monitorId),
+          eq(monitors.userId, userId),
+          eq(monitors.isDeleted, false)
+        )
+      );
+
+    if (monitor.length === 0) {
+      throw new NotFoundException('Monitor not found');
+    }
+
+    // Get alert recipients
+    return await this.db
+      .select()
+      .from(monitorAlertRecipients)
+      .where(eq(monitorAlertRecipients.monitorId, monitorId));
+  }
+
+  async deleteAlertRecipient(
+    recipientId: string,
+    monitorId: string,
+    userId: string
+  ): Promise<void> {
+    // Verify monitor ownership
+    const monitor = await this.db
+      .select()
+      .from(monitors)
+      .where(
+        and(
+          eq(monitors.id, monitorId),
+          eq(monitors.userId, userId),
+          eq(monitors.isDeleted, false)
+        )
+      );
+
+    if (monitor.length === 0) {
+      throw new NotFoundException('Monitor not found');
+    }
+
+    // Verify alert recipient exists
+    const recipient = await this.db
+      .select()
+      .from(monitorAlertRecipients)
+      .where(
+        and(
+          eq(monitorAlertRecipients.id, recipientId),
+          eq(monitorAlertRecipients.monitorId, monitorId)
+        )
+      );
+
+    if (recipient.length === 0) {
+      throw new NotFoundException('Alert recipient not found');
+    }
+
+    // Delete alert recipient
+    await this.db
+      .delete(monitorAlertRecipients)
+      .where(eq(monitorAlertRecipients.id, recipientId));
+  }
+
+  async toggleAlertRecipient(
+    recipientId: string,
+    monitorId: string,
+    userId: string
+  ): Promise<AlertRecipient> {
+    // Verify monitor ownership
+    const monitor = await this.db
+      .select()
+      .from(monitors)
+      .where(
+        and(
+          eq(monitors.id, monitorId),
+          eq(monitors.userId, userId),
+          eq(monitors.isDeleted, false)
+        )
+      );
+
+    if (monitor.length === 0) {
+      throw new NotFoundException('Monitor not found');
+    }
+
+    // Verify alert recipient exists
+    const recipient = await this.db
+      .select()
+      .from(monitorAlertRecipients)
+      .where(
+        and(
+          eq(monitorAlertRecipients.id, recipientId),
+          eq(monitorAlertRecipients.monitorId, monitorId)
+        )
+      );
+
+    if (recipient.length === 0) {
+      throw new NotFoundException('Alert recipient not found');
+    }
+
+    // Toggle status
+    const newStatus = !recipient[0].isActive;
+    const updatedRecipient = await this.db
+      .update(monitorAlertRecipients)
+      .set({
+        isActive: newStatus,
+        updatedAt: new Date(),
+      })
+      .where(eq(monitorAlertRecipients.id, recipientId))
+      .returning();
+
+    return updatedRecipient[0];
+  }
+}

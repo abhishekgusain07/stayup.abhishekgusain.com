@@ -1,0 +1,29 @@
+{
+  "name": "stayup-lambda-monitor",
+  "version": "1.0.0",
+  "description": "StayUp Lambda monitoring workers for multi-region website monitoring",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "build:lambda": "npm run build && npm run package",
+    "package": "cd dist && zip -r ../lambda-function.zip .",
+    "deploy:us-east": "aws lambda update-function-code --function-name stayup-monitor-us-east --zip-file fileb://lambda-function.zip --region us-east-1",
+    "deploy:eu-west": "aws lambda update-function-code --function-name stayup-monitor-eu-west --zip-file fileb://lambda-function.zip --region eu-west-1",
+    "deploy:ap-south": "aws lambda update-function-code --function-name stayup-monitor-ap-south --zip-file fileb://lambda-function.zip --region ap-south-1",
+    "deploy:all": "npm run deploy:us-east && npm run deploy:eu-west && npm run deploy:ap-south",
+    "test:local": "ts-node src/test-local.ts"
+  },
+  "keywords": ["uptime", "monitoring", "lambda", "aws", "typescript"],
+  "author": "Abhishek Gusain",
+  "license": "MIT",
+  "dependencies": {
+    "aws-sdk": "^2.1691.0",
+    "zod": "^4.0.5"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.143",
+    "@types/node": "^20.11.24",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
