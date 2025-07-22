@@ -11,7 +11,8 @@
     "deploy:eu-west": "aws lambda update-function-code --function-name stayup-monitor-eu-west --zip-file fileb://lambda-function.zip --region eu-west-1",
     "deploy:ap-south": "aws lambda update-function-code --function-name stayup-monitor-ap-south --zip-file fileb://lambda-function.zip --region ap-south-1",
     "deploy:all": "npm run deploy:us-east && npm run deploy:eu-west && npm run deploy:ap-south",
-    "test:local": "ts-node src/test-local.ts"
+    "test:local": "ts-node src/test-local.ts",
+    "sync-types": "node ../scripts/sync-types.js"
   },
   "keywords": ["uptime", "monitoring", "lambda", "aws", "typescript"],
   "author": "Abhishek Gusain",
