@@ -17,6 +17,7 @@
   "author": "Abhishek Gusain",
   "license": "MIT",
   "dependencies": {
+    "@stayup/shared-types": "file:../packages/shared-types",
     "aws-sdk": "^2.1691.0",
     "zod": "^4.0.5"
   },

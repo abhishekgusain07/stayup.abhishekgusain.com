@@ -10,7 +10,7 @@ import {
   MonitorJob,
   MONITOR_REGION,
   HTTP_METHOD,
-} from '../../types/monitoring-types';
+} from '@stayup/shared-types';
 
 @Injectable()
 export class SchedulerService {

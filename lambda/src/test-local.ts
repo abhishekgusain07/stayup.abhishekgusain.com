@@ -1,5 +1,5 @@
 import { MonitorWorker } from './monitor';
-import { MonitorJob, MONITOR_REGION, HTTP_METHOD } from './types';
+import { MonitorJob, MONITOR_REGION, HTTP_METHOD } from '@stayup/shared-types';
 
 /**
  * Local testing script for Lambda monitoring functionality

@@ -13,7 +13,7 @@ import {
   type CreateMonitor,
   type UpdateMonitor,
   type Monitor
-} from '../../types/monitoring-types';
+} from '@stayup/shared-types';
 
 @Injectable()
 export class MonitorService {

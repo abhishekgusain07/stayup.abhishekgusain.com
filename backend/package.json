@@ -24,6 +24,7 @@
   "author": "Abhishek Gusain",
   "license": "MIT",
   "dependencies": {
+    "@stayup/shared-types": "file:../packages/shared-types",
     "@aws-sdk/client-ses": "^3.848.0",
     "@aws-sdk/client-sqs": "^3.848.0",
     "@neondatabase/serverless": "^1.0.1",

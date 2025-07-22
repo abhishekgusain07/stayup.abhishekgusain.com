@@ -7,7 +7,7 @@ import {
   MONITOR_STATUS, 
   MONITOR_REGION,
   WebhookMonitorResult 
-} from './types';
+} from '@stayup/shared-types';
 
 export class MonitorWorker {
   private readonly apiEndpoint: string;

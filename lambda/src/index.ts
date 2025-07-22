@@ -1,6 +1,6 @@
 import { SQSEvent, SQSRecord, Context } from 'aws-lambda';
 import { MonitorWorker } from './monitor';
-import { MonitorJobSchema, MonitorJobResultSchema, MONITOR_REGION } from './types';
+import { MonitorJobSchema, MonitorJobResultSchema, MONITOR_REGION } from '@stayup/shared-types';
 
 const worker = new MonitorWorker();
 

@@ -13,7 +13,7 @@ import {
   INCIDENT_STATUS,
   type WebhookMonitorResult,
   type MonitorJobResult
-} from '../../types/monitoring-types';
+} from '@stayup/shared-types';
 
 @Injectable()
 export class WebhookService {

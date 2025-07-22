@@ -9,7 +9,7 @@ import {
   getSubscriptionLimits,
   type CreateAlertRecipient,
   type AlertRecipient
-} from '../../types/monitoring-types';
+} from '@stayup/shared-types';
 
 @Injectable()
 export class AlertRecipientService {
@@ -55,7 +55,7 @@ export class AlertRecipientService {
         )
       );
 
-    if (limits.alertRecipients !== -1 && currentRecipients.length >= limits.alertRecipients) {
+    if ( currentRecipients.length >= limits.alertRecipients) {
       throw new ForbiddenException(
         `Alert recipient limit reached. Your ${userSubscription} plan allows ${limits.alertRecipients} alert recipients per monitor. Upgrade to add more.`
       );
