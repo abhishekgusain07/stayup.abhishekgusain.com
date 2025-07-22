@@ -1,0 +1,29 @@
+# Node
+node_modules/
+
+# Build output
+.next/
+out/
+dist/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS
+.DS_Store
+
+# Env
+.env*
+
+# Misc
+*.local
+coverage/
+
+# Bun
+bun.lockb
+
+
+.env
