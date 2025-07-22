@@ -31,7 +31,7 @@ import {
   UpdateMonitor, 
   createSuccessResponse, 
   createErrorResponse 
-} from '@stayup/shared-types';
+} from '../../types/shared';
 
 @ApiTags('Monitors')
 @Controller('monitors')

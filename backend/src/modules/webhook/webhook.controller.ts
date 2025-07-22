@@ -18,7 +18,7 @@ import {
 import { Throttle } from '@nestjs/throttler';
 
 import { WebhookService } from './webhook.service';
-import { createSuccessResponse, createErrorResponse } from '@stayup/shared-types';
+import { createSuccessResponse, createErrorResponse } from '../../types/shared';
 
 /**
  * Custom decorator to mark routes as public (bypass authentication)

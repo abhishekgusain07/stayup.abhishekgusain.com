@@ -9,7 +9,7 @@ import {
   getSubscriptionLimits,
   type CreateAlertRecipient,
   type AlertRecipient
-} from '@stayup/shared-types';
+} from '../../types/shared';
 
 @Injectable()
 export class AlertRecipientService {

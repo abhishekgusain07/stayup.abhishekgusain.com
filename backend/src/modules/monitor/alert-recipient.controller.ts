@@ -23,7 +23,7 @@ import {
   CreateAlertRecipient,
   createSuccessResponse,
   createErrorResponse,
-} from '@stayup/shared-types';
+} from '../../types/shared';
 
 @ApiTags('Alert Recipients')
 @Controller('monitors/:monitorId/alert-recipients')
