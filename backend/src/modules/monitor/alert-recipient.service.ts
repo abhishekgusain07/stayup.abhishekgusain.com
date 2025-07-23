@@ -3,7 +3,7 @@ import { eq, and } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 
 import { DATABASE_CONNECTION } from '../../database/database.module';
-import { monitors, monitorAlertRecipients } from '../../database/schema';
+import { monitors, alertRecipients } from '../../database/schema';
 import { 
   CreateAlertRecipientSchema, 
   getSubscriptionLimits,
@@ -34,7 +34,7 @@ export class AlertRecipientService {
         and(
           eq(monitors.id, monitorId),
           eq(monitors.userId, userId),
-          eq(monitors.isDeleted, false)
+          
         )
       );
 
@@ -47,11 +47,11 @@ export class AlertRecipientService {
     
     const currentRecipients = await this.db
       .select()
-      .from(monitorAlertRecipients)
+      .from(alertRecipients)
       .where(
         and(
-          eq(monitorAlertRecipients.monitorId, monitorId),
-          eq(monitorAlertRecipients.isActive, true)
+          eq(alertRecipients.monitorId, monitorId),
+          eq(alertRecipients.isActive, true)
         )
       );
 
@@ -64,11 +64,11 @@ export class AlertRecipientService {
     // Check if email already exists for this monitor
     const existingRecipient = await this.db
       .select()
-      .from(monitorAlertRecipients)
+      .from(alertRecipients)
       .where(
         and(
-          eq(monitorAlertRecipients.monitorId, monitorId),
-          eq(monitorAlertRecipients.email, validatedData.email)
+          eq(alertRecipients.monitorId, monitorId),
+          eq(alertRecipients.email, validatedData.email)
         )
       );
 
@@ -78,7 +78,7 @@ export class AlertRecipientService {
 
     // Create alert recipient
     const newRecipient = await this.db
-      .insert(monitorAlertRecipients)
+      .insert(alertRecipients)
       .values({
         id: nanoid(),
         monitorId,
@@ -101,7 +101,7 @@ export class AlertRecipientService {
         and(
           eq(monitors.id, monitorId),
           eq(monitors.userId, userId),
-          eq(monitors.isDeleted, false)
+          
         )
       );
 
@@ -112,8 +112,8 @@ export class AlertRecipientService {
     // Get alert recipients
     return await this.db
       .select()
-      .from(monitorAlertRecipients)
-      .where(eq(monitorAlertRecipients.monitorId, monitorId));
+      .from(alertRecipients)
+      .where(eq(alertRecipients.monitorId, monitorId));
   }
 
   async deleteAlertRecipient(
@@ -129,7 +129,7 @@ export class AlertRecipientService {
         and(
           eq(monitors.id, monitorId),
           eq(monitors.userId, userId),
-          eq(monitors.isDeleted, false)
+          
         )
       );
 
@@ -140,11 +140,11 @@ export class AlertRecipientService {
     // Verify alert recipient exists
     const recipient = await this.db
       .select()
-      .from(monitorAlertRecipients)
+      .from(alertRecipients)
       .where(
         and(
-          eq(monitorAlertRecipients.id, recipientId),
-          eq(monitorAlertRecipients.monitorId, monitorId)
+          eq(alertRecipients.id, recipientId),
+          eq(alertRecipients.monitorId, monitorId)
         )
       );
 
@@ -154,8 +154,8 @@ export class AlertRecipientService {
 
     // Delete alert recipient
     await this.db
-      .delete(monitorAlertRecipients)
-      .where(eq(monitorAlertRecipients.id, recipientId));
+      .delete(alertRecipients)
+      .where(eq(alertRecipients.id, recipientId));
   }
 
   async toggleAlertRecipient(
@@ -171,7 +171,6 @@ export class AlertRecipientService {
         and(
           eq(monitors.id, monitorId),
           eq(monitors.userId, userId),
-          eq(monitors.isDeleted, false)
         )
       );
 
@@ -182,11 +181,11 @@ export class AlertRecipientService {
     // Verify alert recipient exists
     const recipient = await this.db
       .select()
-      .from(monitorAlertRecipients)
+      .from(alertRecipients)
       .where(
         and(
-          eq(monitorAlertRecipients.id, recipientId),
-          eq(monitorAlertRecipients.monitorId, monitorId)
+          eq(alertRecipients.id, recipientId),
+          eq(alertRecipients.monitorId, monitorId)
         )
       );
 
@@ -197,12 +196,12 @@ export class AlertRecipientService {
     // Toggle status
     const newStatus = !recipient[0].isActive;
     const updatedRecipient = await this.db
-      .update(monitorAlertRecipients)
+      .update(alertRecipients)
       .set({
         isActive: newStatus,
         updatedAt: new Date(),
       })
-      .where(eq(monitorAlertRecipients.id, recipientId))
+      .where(eq(alertRecipients.id, recipientId))
       .returning();
 
     return updatedRecipient[0];

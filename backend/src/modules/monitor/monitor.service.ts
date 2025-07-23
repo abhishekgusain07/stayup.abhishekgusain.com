@@ -36,7 +36,6 @@ export class MonitorService {
         and(
           eq(monitors.userId, userId),
           eq(monitors.isActive, true),
-          eq(monitors.isDeleted, false)
         )
       );
 
@@ -122,7 +121,6 @@ export class MonitorService {
       .where(
         and(
           eq(monitors.userId, userId),
-          eq(monitors.isDeleted, false)
         )
       )
       .orderBy(desc(monitors.createdAt))
@@ -136,7 +134,6 @@ export class MonitorService {
       .where(
         and(
           eq(monitors.userId, userId),
-          eq(monitors.isDeleted, false)
         )
       );
 
@@ -162,7 +159,6 @@ export class MonitorService {
         and(
           eq(monitors.id, monitorId),
           eq(monitors.userId, userId),
-          eq(monitors.isDeleted, false)
         )
       );
 
@@ -321,7 +317,7 @@ export class MonitorService {
   private async cancelMonitorJob(monitorId: string): Promise<void> {
     try {
       await this.monitorQueue.removeRepeatable('check-monitor', {
-        repeat: { every: 60000 }, // We need to know the original repeat options
+        every: 60000,
         jobId: `monitor-${monitorId}`,
       });
     } catch (error) {

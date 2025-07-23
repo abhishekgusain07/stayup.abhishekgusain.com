@@ -7,7 +7,7 @@ import {
   createErrorResponse,
   getSubscriptionLimits,
   type Monitor 
-} from "@stayup/shared-types";
+} from "@/types/shared";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { eq, and, desc } from "drizzle-orm";

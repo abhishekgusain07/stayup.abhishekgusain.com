@@ -10,6 +10,7 @@ import {
   MonitorJob,
   MONITOR_REGION,
   HTTP_METHOD,
+  Monitor,
 } from '../../types/shared';
 
 @Injectable()
@@ -104,13 +105,12 @@ export class SchedulerService {
       const cutoffTime = new Date();
       cutoffTime.setMinutes(cutoffTime.getMinutes() - 3); // Check monitors not checked in 3+ minutes
 
-      const monitors = await this.db
+      const monitorsduecheck = await this.db
         .select()
         .from(monitors)
         .where(
           and(
             eq(monitors.isActive, true),
-            eq(monitors.isDeleted, false),
             // Either never checked or last check was more than interval minutes ago
             or(
               isNull(monitors.lastCheckedAt),
@@ -119,7 +119,7 @@ export class SchedulerService {
           )
         );
 
-      return monitors.filter(monitor => {
+      return monitorsduecheck.filter(monitor => {
         if (!monitor.lastCheckedAt) {
           return true; // Never checked, should be checked
         }
@@ -161,7 +161,7 @@ export class SchedulerService {
         const job: MonitorJob = {
           monitorId: monitor.id,
           url: monitor.url,
-          method: monitor.method as HTTP_METHOD,
+          method: monitor.method as keyof typeof HTTP_METHOD,
           expectedStatusCodes: Array.isArray(monitor.expectedStatusCodes) 
             ? monitor.expectedStatusCodes 
             : JSON.parse(monitor.expectedStatusCodes || '[200]'),
@@ -258,7 +258,7 @@ export class SchedulerService {
   /**
    * Update monitor timestamps to prevent duplicate scheduling
    */
-  private async updateMonitorTimestamps(monitors: any[]): Promise<void> {
+  private async updateMonitorTimestamps(monitors: Monitor[]): Promise<void> {
     try {
       const now = new Date();
       
@@ -270,7 +270,6 @@ export class SchedulerService {
             lastCheckedAt: now,
             updatedAt: now 
           })
-          .where(eq(monitors.id, monitor.id))
       );
 
       await Promise.all(updatePromises);
@@ -293,7 +292,6 @@ export class SchedulerService {
         .where(
           and(
             eq(monitors.isActive, true),
-            eq(monitors.isDeleted, false)
           )
         );
 
@@ -303,7 +301,6 @@ export class SchedulerService {
         .where(
           and(
             eq(monitors.isActive, true),
-            eq(monitors.isDeleted, false),
             gte(monitors.lastCheckedAt, new Date(Date.now() - 10 * 60 * 1000)) // Last 10 minutes
           )
         );

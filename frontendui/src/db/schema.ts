@@ -1,4 +1,31 @@
-import { pgTable, text, integer, timestamp, boolean, real, jsonb, uuid } from "drizzle-orm/pg-core";
+import { pgTable, text, integer, timestamp, boolean, real, jsonb, uuid, pgEnum } from "drizzle-orm/pg-core";
+
+export const subscriptionPlanEnum = pgEnum('subscription_plan', ['BASIC', 'PREMIUM', 'ENTERPRISE']);
+
+export const SUBSCRIPTION_PLANS = {
+  BASIC: 'BASIC', 
+  PREMIUM: 'PREMIUM',
+  ENTERPRISE: 'ENTERPRISE'
+} as const;
+
+export type SubscriptionPlan = typeof SUBSCRIPTION_PLANS[keyof typeof SUBSCRIPTION_PLANS];
+
+export const isValidPlan = (plan: string): plan is SubscriptionPlan => {
+  return Object.values(SUBSCRIPTION_PLANS).includes(plan as SubscriptionPlan);
+};
+
+export const getPlanPriority = (plan: SubscriptionPlan): number => {
+  switch (plan) {
+    case SUBSCRIPTION_PLANS.BASIC:
+      return 1;
+    case SUBSCRIPTION_PLANS.PREMIUM:
+      return 2;
+    case SUBSCRIPTION_PLANS.ENTERPRISE:
+      return 3;
+    default:
+      return 0;
+  }
+};
 			
 export const user = pgTable("user", {
 	id: text("id").primaryKey(),

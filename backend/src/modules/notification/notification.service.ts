@@ -4,7 +4,7 @@ import * as nodemailer from 'nodemailer';
 import { eq, and } from 'drizzle-orm';
 
 import { DATABASE_CONNECTION } from '../../database/database.module';
-import { monitors, incidents, monitorAlertRecipients } from '../../database/schema';
+import { monitors, incidents, alertRecipients } from '../../database/schema';
 
 @Injectable()
 export class NotificationService {
@@ -31,7 +31,7 @@ export class NotificationService {
       },
     };
 
-    this.transporter = nodemailer.createTransporter(smtpConfig);
+    this.transporter = nodemailer.createTransport(smtpConfig);
 
     console.log('Email transporter initialized:', {
       host: smtpConfig.host,
@@ -176,11 +176,11 @@ export class NotificationService {
     try {
       return await this.db
         .select()
-        .from(monitorAlertRecipients)
+        .from(alertRecipients)
         .where(
           and(
-            eq(monitorAlertRecipients.monitorId, monitorId),
-            eq(monitorAlertRecipients.isActive, true)
+            eq(alertRecipients.monitorId, monitorId),
+            eq(alertRecipients.isActive, true)
           )
         );
     } catch (error) {

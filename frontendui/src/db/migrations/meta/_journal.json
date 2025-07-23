@@ -36,6 +36,20 @@
       "when": 1753122474705,
       "tag": "0004_slim_fenris",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1753243506137,
+      "tag": "0005_stiff_hydra",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1753244263500,
+      "tag": "0006_blushing_princess_powerful",
+      "breakpoints": true
     }
   ]
 }

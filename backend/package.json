@@ -21,7 +21,12 @@
     "db:studio": "drizzle-kit studio",
     "sync-types": "node ../scripts/sync-types.js"
   },
-  "keywords": ["uptime", "monitoring", "nestjs", "typescript"],
+  "keywords": [
+    "uptime",
+    "monitoring",
+    "nestjs",
+    "typescript"
+  ],
   "author": "Abhishek Gusain",
   "license": "MIT",
   "dependencies": {
@@ -38,12 +43,13 @@
     "@nestjs/schedule": "^6.0.0",
     "@nestjs/swagger": "^11.2.0",
     "@nestjs/throttler": "^6.4.0",
+    "aws-sdk": "^2.1692.0",
     "bull": "^4.16.5",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
     "drizzle-orm": "^0.44.3",
     "ioredis": "^5.6.1",
-    "nanoid": "^5.1.5",
+    "nanoid": "^3.3.7",
     "nodemailer": "^7.0.5",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
@@ -77,13 +83,19 @@
     "typescript": "^5.8.3"
   },
   "jest": {
-    "moduleFileExtensions": ["js", "json", "ts"],
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
-    "collectCoverageFrom": ["**/*.(t|j)s"],
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
   }

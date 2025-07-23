@@ -287,7 +287,7 @@ export function createErrorResponse(
   error: string,
   message?: string
 ): ApiResponse<never> {
-  return createApiResponse(false, undefined!, message, error);
+  return createApiResponse<never>(false, undefined as never, message, error);
 }
 
 export function isMonitorUp(status: MonitorStatus): boolean {

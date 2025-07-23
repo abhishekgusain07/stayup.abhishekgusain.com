@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db/drizzle";
-import { monitors, alertRecipients } from "@/db/schema";
+import { monitors, alertRecipients, user } from "@/db/schema";
 import { 
   CreateAlertRecipientSchema, 
   createSuccessResponse, 
   createErrorResponse,
   getSubscriptionLimits 
-} from "@stayup/shared-types";
+} from "@/types/shared";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { eq, and } from "drizzle-orm";
@@ -117,8 +117,12 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const recipientData = validationResult.data;
 
     // Check subscription limits
-    const userSubscription = session.user.subscription || "BASIC";
-    const limits = getSubscriptionLimits(userSubscription);
+    const userId = session.user.id;
+    const userSubscription = await db.select({subscription: user.subscription})
+    .from(user)
+    .where(eq(user.id, userId));
+    const subType = userSubscription[0].subscription;
+    const limits = getSubscriptionLimits("BASIC");
 
     // Count current alert recipients for this monitor
     const currentRecipients = await db
@@ -131,7 +135,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         )
       );
 
-    if (limits.alertRecipients !== -1 && currentRecipients.length >= limits.alertRecipients) {
+    if (currentRecipients.length >= limits.alertRecipients) {
       return NextResponse.json(
         createErrorResponse(
           "Alert recipient limit reached",
