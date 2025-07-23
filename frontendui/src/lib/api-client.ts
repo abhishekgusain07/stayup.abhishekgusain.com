@@ -8,6 +8,16 @@ import {
   PaginatedResponse
 } from '@/types/shared';
 
+type MonitorsPaginatedData = {
+  items: Monitor[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+};
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
 
 class ApiClient {
@@ -48,9 +58,8 @@ class ApiClient {
   }
 
   // Monitor API methods
-  async getMonitors(page = 1, limit = 10): Promise<PaginatedResponse<Monitor>> {
-    const response = await this.request<PaginatedResponse<Monitor>>(`/monitors?page=${page}&limit=${limit}`);
-    return response.data!;
+  async getMonitors(page = 1, limit = 10): Promise<ApiResponse<MonitorsPaginatedData>> {
+    return this.request<MonitorsPaginatedData>(`/monitors?page=${page}&limit=${limit}`);
   }
 
   async getMonitor(id: string): Promise<ApiResponse<Monitor>> {

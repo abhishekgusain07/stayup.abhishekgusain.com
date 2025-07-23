@@ -5,18 +5,19 @@ import {
   UpdateMonitorSchema, 
   createSuccessResponse, 
   createErrorResponse 
-} from "@stayup/shared-types";
+} from "@/types/shared";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { eq, and } from "drizzle-orm";
 
 type RouteParams = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
 // GET /api/monitors/[id] - Get a specific monitor
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
+    const { id } = await params;
     const session = await auth.api.getSession({
       headers: await headers()
     });
@@ -33,7 +34,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       .from(monitors)
       .where(
         and(
-          eq(monitors.id, params.id),
+          eq(monitors.id, id),
           eq(monitors.userId, session.user.id)
         )
       );
@@ -60,6 +61,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 // PUT /api/monitors/[id] - Update a monitor
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
+    const { id } = await params;
     const session = await auth.api.getSession({
       headers: await headers()
     });
@@ -77,7 +79,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       .from(monitors)
       .where(
         and(
-          eq(monitors.id, params.id),
+          eq(monitors.id, id),
           eq(monitors.userId, session.user.id)
         )
       );
@@ -129,7 +131,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     const updatedMonitor = await db
       .update(monitors)
       .set(updateFields)
-      .where(eq(monitors.id, params.id))
+      .where(eq(monitors.id, id))
       .returning();
 
     // TODO: Add monitor update log entry
@@ -153,6 +155,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 // DELETE /api/monitors/[id] - Delete a monitor
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
+    const { id } = await params;
     const session = await auth.api.getSession({
       headers: await headers()
     });
@@ -170,7 +173,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       .from(monitors)
       .where(
         and(
-          eq(monitors.id, params.id),
+          eq(monitors.id, id),
           eq(monitors.userId, session.user.id)
         )
       );
@@ -190,7 +193,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
         isActive: false,
         updatedAt: new Date(),
       })
-      .where(eq(monitors.id, params.id))
+      .where(eq(monitors.id, id))
       .returning();
 
     // TODO: Add monitor deletion log entry
@@ -215,6 +218,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 // PATCH /api/monitors/[id] - Toggle monitor status
 export async function PATCH(request: NextRequest, { params }: RouteParams) {
   try {
+    const { id } = await params;
     const session = await auth.api.getSession({
       headers: await headers()
     });
@@ -232,7 +236,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       .from(monitors)
       .where(
         and(
-          eq(monitors.id, params.id),
+          eq(monitors.id, id),
           eq(monitors.userId, session.user.id)
         )
       );
@@ -256,7 +260,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
           isActive: newStatus,
           updatedAt: new Date(),
         })
-        .where(eq(monitors.id, params.id))
+        .where(eq(monitors.id, id))
         .returning();
 
       return NextResponse.json(

@@ -7,12 +7,13 @@ import { headers } from "next/headers";
 import { eq, and } from "drizzle-orm";
 
 type RouteParams = {
-  params: { id: string; recipientId: string };
+  params: Promise<{ id: string; recipientId: string }>;
 };
 
 // DELETE /api/monitors/[id]/alert-recipients/[recipientId] - Remove alert recipient
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
+    const { id, recipientId } = await params;
     const session = await auth.api.getSession({
       headers: await headers()
     });
@@ -30,7 +31,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       .from(monitors)
       .where(
         and(
-          eq(monitors.id, params.id),
+          eq(monitors.id, id),
           eq(monitors.userId, session.user.id)
         )
       );
@@ -48,8 +49,8 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       .from(alertRecipients)
       .where(
         and(
-          eq(alertRecipients.id, params.recipientId),
-          eq(alertRecipients.monitorId, params.id)
+          eq(alertRecipients.id, recipientId),
+          eq(alertRecipients.monitorId, id)
         )
       );
 
@@ -63,7 +64,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     // Delete the alert recipient
     await db
       .delete(alertRecipients)
-      .where(eq(alertRecipients.id, params.recipientId));
+      .where(eq(alertRecipients.id, recipientId));
 
     return NextResponse.json(
       createSuccessResponse(
@@ -83,6 +84,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 // PATCH /api/monitors/[id]/alert-recipients/[recipientId] - Toggle alert recipient status
 export async function PATCH(request: NextRequest, { params }: RouteParams) {
   try {
+    const { id, recipientId } = await params;
     const session = await auth.api.getSession({
       headers: await headers()
     });
@@ -100,7 +102,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       .from(monitors)
       .where(
         and(
-          eq(monitors.id, params.id),
+          eq(monitors.id, id),
           eq(monitors.userId, session.user.id)
         )
       );
@@ -118,8 +120,8 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       .from(alertRecipients)
       .where(
         and(
-          eq(alertRecipients.id, params.recipientId),
-          eq(alertRecipients.monitorId, params.id)
+          eq(alertRecipients.id, recipientId),
+          eq(alertRecipients.monitorId, id)
         )
       );
 
@@ -142,7 +144,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
           isActive: newStatus,
           updatedAt: new Date(),
         })
-        .where(eq(alertRecipients.id, params.recipientId))
+        .where(eq(alertRecipients.id, recipientId))
         .returning();
 
       return NextResponse.json(

@@ -13,12 +13,13 @@ import { eq, and } from "drizzle-orm";
 import { nanoid } from "nanoid";
 
 type RouteParams = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
 // GET /api/monitors/[id]/alert-recipients - List alert recipients for a monitor
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
+    const { id } = await params;
     const session = await auth.api.getSession({
       headers: await headers()
     });
@@ -36,7 +37,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       .from(monitors)
       .where(
         and(
-          eq(monitors.id, params.id),
+          eq(monitors.id, id),
           eq(monitors.userId, session.user.id)
         )
       );
@@ -52,7 +53,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const recipients = await db
       .select()
       .from(alertRecipients)
-      .where(eq(alertRecipients.monitorId, params.id));
+      .where(eq(alertRecipients.monitorId, id));
 
     return NextResponse.json(
       createSuccessResponse(recipients)
@@ -69,6 +70,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 // POST /api/monitors/[id]/alert-recipients - Add alert recipient to a monitor
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
+    const { id } = await params;
     const session = await auth.api.getSession({
       headers: await headers()
     });
@@ -86,7 +88,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       .from(monitors)
       .where(
         and(
-          eq(monitors.id, params.id),
+          eq(monitors.id, id),
           eq(monitors.userId, session.user.id)
         )
       );
@@ -101,7 +103,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const body = await request.json();
     const validationResult = CreateAlertRecipientSchema.safeParse({
       ...body,
-      monitorId: params.id,
+      monitorId: id,
     });
 
     if (!validationResult.success) {
@@ -130,7 +132,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       .from(alertRecipients)
       .where(
         and(
-          eq(alertRecipients.monitorId, params.id),
+          eq(alertRecipients.monitorId, id),
           eq(alertRecipients.isActive, true)
         )
       );
@@ -151,7 +153,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       .from(alertRecipients)
       .where(
         and(
-          eq(alertRecipients.monitorId, params.id),
+          eq(alertRecipients.monitorId, id),
           eq(alertRecipients.email, recipientData.email)
         )
       );
@@ -171,7 +173,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       .insert(alertRecipients)
       .values({
         id: nanoid(),
-        monitorId: params.id,
+        monitorId: id,
         email: recipientData.email,
         isActive: true,
         createdAt: new Date(),

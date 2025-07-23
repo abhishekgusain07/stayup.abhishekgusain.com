@@ -68,78 +68,78 @@ export function MonitorCard({
 
   return (
     <Card className="hover:shadow-md transition-shadow">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-        <div className="space-y-1">
-          <CardTitle className="text-lg font-semibold flex items-center gap-2">
-            <Globe className="h-4 w-4 text-muted-foreground" />
-            {monitor.name}
-          </CardTitle>
-          <CardDescription className="text-sm">
-            {monitor.url}
-          </CardDescription>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <MonitorStatusBadge status={monitor.currentStatus} />
-          
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <MoreVertical className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem asChild>
-                <Link href={`/dashboard/monitors/${monitor.id}`}>
-                  <Eye className="mr-2 h-4 w-4" />
-                  View Details
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onEdit?.(monitor)}>
-                <Edit className="mr-2 h-4 w-4" />
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onManageAlerts?.(monitor)}>
-                <Mail className="mr-2 h-4 w-4" />
-                Manage Alerts
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={handleToggle}
-                disabled={isLoading}
-              >
-                {monitor.isActive ? (
-                  <>
-                    <PowerOff className="mr-2 h-4 w-4" />
-                    Disable
-                  </>
-                ) : (
-                  <>
-                    <Power className="mr-2 h-4 w-4" />
-                    Enable
-                  </>
-                )}
-              </DropdownMenuItem>
-              {monitor.slug && (
+      <CardHeader className="pb-3">
+        <div className="flex flex-row items-start justify-between w-full">
+          <div className="space-y-1">
+            <CardTitle className="text-lg font-semibold flex items-center gap-2">
+              <Globe className="h-4 w-4 text-muted-foreground" />
+              {monitor.name}
+            </CardTitle>
+            <CardDescription className="text-sm break-all">
+              {monitor.url}
+            </CardDescription>
+          </div>
+          <div className="flex items-center gap-2 ml-4">
+            <MonitorStatusBadge status={monitor.currentStatus} />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
                 <DropdownMenuItem asChild>
-                  <a 
-                    href={`/status/${monitor.slug}`} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                  >
-                    <ExternalLink className="mr-2 h-4 w-4" />
-                    Status Page
-                  </a>
+                  <Link href={`/dashboard/monitors/${monitor.id}`}>
+                    <Eye className="mr-2 h-4 w-4" />
+                    View Details
+                  </Link>
                 </DropdownMenuItem>
-              )}
-              <DropdownMenuItem 
-                onClick={() => onDelete?.(monitor)}
-                className="text-red-600 focus:text-red-600"
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <DropdownMenuItem onClick={() => onEdit?.(monitor)}>
+                  <Edit className="mr-2 h-4 w-4" />
+                  Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onManageAlerts?.(monitor)}>
+                  <Mail className="mr-2 h-4 w-4" />
+                  Manage Alerts
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={handleToggle}
+                  disabled={isLoading}
+                >
+                  {monitor.isActive ? (
+                    <>
+                      <PowerOff className="mr-2 h-4 w-4" />
+                      Disable
+                    </>
+                  ) : (
+                    <>
+                      <Power className="mr-2 h-4 w-4" />
+                      Enable
+                    </>
+                  )}
+                </DropdownMenuItem>
+                {monitor.slug && (
+                  <DropdownMenuItem asChild>
+                    <a 
+                      href={`/status/${monitor.slug}`} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                    >
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      Status Page
+                    </a>
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem 
+                  onClick={() => onDelete?.(monitor)}
+                  className="text-red-600 focus:text-red-600"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </CardHeader>
 
