@@ -19,21 +19,23 @@ export class AuthGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest();
-    const token = this.extractTokenFromHeader(request);
+    const sessionToken = this.extractSessionTokenFromCookies(request);
 
-    if (!token) {
+    console.log('Raw cookies:', request.headers.cookie);
+    console.log('Extracted session token:', sessionToken);
+
+    if (!sessionToken) {
       throw new UnauthorizedException('Access token is required');
     }
 
     try {
-      const payload = await this.jwtService.verifyAsync(token);
-      const user = await this.authService.validateUserById(payload.userId);
+      const user = await this.authService.validateUserBySessionToken(sessionToken);
       
       if (!user) {
-        throw new UnauthorizedException('Invalid token');
+        throw new UnauthorizedException('Invalid session');
       }
 
-      // Attach user to request following uptimeMonitor pattern
+      // Attach user to request
       request.user = {
         userId: user.id,
         email: user.email,
@@ -43,12 +45,24 @@ export class AuthGuard implements CanActivate {
       
       return true;
     } catch (error) {
-      throw new UnauthorizedException('Invalid or expired token');
+      throw new UnauthorizedException('Invalid or expired session');
     }
   }
 
-  private extractTokenFromHeader(request: any): string | undefined {
-    const [type, token] = request.headers.authorization?.split(' ') ?? [];
-    return type === 'Bearer' ? token : undefined;
+  private extractSessionTokenFromCookies(request: any): string | undefined {
+    const cookies = request.headers.cookie;
+    if (!cookies) return undefined;
+    
+    const match = cookies.match(/better-auth\.session_token=([^;]+)/);
+    if (!match) return undefined;
+    
+    const fullToken = decodeURIComponent(match[1]);
+    // Better-auth stores only the first part (before the dot) in the database
+    const sessionId = fullToken.split('.')[0];
+    
+    console.log('Full token from cookie:', fullToken);
+    console.log('Session ID (first part):', sessionId);
+    
+    return sessionId;
   }
 }

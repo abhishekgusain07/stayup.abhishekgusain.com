@@ -6,7 +6,7 @@ import {
   AlertRecipient,
   ApiResponse,
   PaginatedResponse
-} from './monitoring-types';
+} from '@/types/shared';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
 
@@ -27,6 +27,7 @@ class ApiClient {
 
     const response = await fetch(url, {
       ...options,
+      credentials: 'include', // Include cookies for better-auth session
       headers: {
         ...defaultHeaders,
         ...options.headers,
@@ -41,17 +42,15 @@ class ApiClient {
   }
 
   private getAuthToken(): string | null {
-    // Implement based on your auth system
-    // For Better Auth, you might get it from cookies or context
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('authToken');
-    }
+    // For better-auth integration, we don't need to manually set Authorization header
+    // The session token will be sent via cookies automatically
     return null;
   }
 
   // Monitor API methods
   async getMonitors(page = 1, limit = 10): Promise<PaginatedResponse<Monitor>> {
-    return this.request<PaginatedResponse<Monitor>>(`/monitors?page=${page}&limit=${limit}`);
+    const response = await this.request<PaginatedResponse<Monitor>>(`/monitors?page=${page}&limit=${limit}`);
+    return response.data!;
   }
 
   async getMonitor(id: string): Promise<ApiResponse<Monitor>> {
