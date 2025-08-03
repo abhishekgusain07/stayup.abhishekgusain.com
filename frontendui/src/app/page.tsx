@@ -15,7 +15,7 @@ import { useFeedbackModal } from "@/hooks/useFeedbackModal";
 import { useUser } from "@/hooks/useUser";
 import { GlobalMonitoringMap } from "@/components/global-monitoring-map";
 import { isWaitlistMode } from "@/utils/featureFlags";
-import { WaitlistSignup } from "@/components/waitlist-signup";
+import { WaitlistForm } from "@/components/waitlist-signup";
 
 export default function Home() {
   const [showAnnouncement, setShowAnnouncement] = useState(true);
@@ -159,7 +159,7 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: 0.8, ease: "easeOut" }}
                 className="mb-12 md:mb-16"
               >
-                <WaitlistSignup className="px-4 sm:px-0" />
+                <WaitlistForm />
               </motion.div>
             ) : (
               <motion.div 
@@ -344,7 +344,7 @@ export default function Home() {
                   Join our exclusive waitlist and be among the first to experience
                   the future of website uptime monitoring.
                 </p>
-                <WaitlistSignup />
+                <WaitlistForm />
                 <div className="mt-8 flex flex-wrap justify-center items-center gap-6 text-sm text-muted-foreground">
                   <span className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-green-500 rounded-full" />
