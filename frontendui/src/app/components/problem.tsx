@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 // --- Icon Components (for better reusability and readability) ---
 
@@ -125,7 +125,15 @@ const BarChartIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-const ProblemCard = ({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) => {
+const ProblemCard = ({
+  icon,
+  title,
+  description,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}) => {
   return (
     <div
       data-slot="card"
@@ -152,39 +160,39 @@ const ProblemSection = () => {
   const problems = [
     {
       icon: <CodeIcon />,
-      title: 'Boilerplate Burden',
+      title: "Boilerplate Burden",
       description:
-        'Spending weeks setting up authentication, database connections, and basic UI components before building actual features.',
+        "Spending weeks setting up authentication, database connections, and basic UI components before building actual features.",
     },
     {
       icon: <ClockIcon />,
-      title: 'Time-to-Market Delays',
+      title: "Time-to-Market Delays",
       description:
-        'Missing critical launch windows while configuring payment providers, user authentication, and analytics from scratch.',
+        "Missing critical launch windows while configuring payment providers, user authentication, and analytics from scratch.",
     },
     {
       icon: <ShieldIcon />,
-      title: 'Security Concerns',
+      title: "Security Concerns",
       description:
-        'Implementing proper auth flows, data protection, and user permissions is complex and easy to get wrong.',
+        "Implementing proper auth flows, data protection, and user permissions is complex and easy to get wrong.",
     },
     {
       icon: <BugIcon />,
-      title: 'Integration Headaches',
+      title: "Integration Headaches",
       description:
-        'Wasting days debugging mismatched libraries, version conflicts, and incompatible tools in your tech stack.',
+        "Wasting days debugging mismatched libraries, version conflicts, and incompatible tools in your tech stack.",
     },
     {
       icon: <CreditCardIcon />,
-      title: 'Payment Processing Pain',
+      title: "Payment Processing Pain",
       description:
-        'Struggling with Stripe integration, subscription management, and handling the complexity of billing systems.',
+        "Struggling with Stripe integration, subscription management, and handling the complexity of billing systems.",
     },
     {
       icon: <BarChartIcon />,
-      title: 'Analytics Blind Spots',
+      title: "Analytics Blind Spots",
       description:
-        'Launching without proper tracking, user behavior insights, or performance monitoring in place.',
+        "Launching without proper tracking, user behavior insights, or performance monitoring in place.",
     },
   ];
 
@@ -202,7 +210,8 @@ const ProblemSection = () => {
             Building SaaS Apps Shouldn&apos;t Be Hard
           </h2>
           <p className="text-muted-foreground max-w-[800px] md:text-xl/relaxed">
-            Most developers spend too much time on repetitive setup instead of building what makes their product unique.
+            Most developers spend too much time on repetitive setup instead of
+            building what makes their product unique.
           </p>
         </div>
         <div className="mx-auto w-full max-w-5xl overflow-hidden rounded-xl py-6">

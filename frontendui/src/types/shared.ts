@@ -43,7 +43,8 @@ export const SUBSCRIPTION_LIMITS = {
 export type MonitorStatus = keyof typeof MONITOR_STATUS;
 export type IncidentStatus = keyof typeof INCIDENT_STATUS;
 export type HttpMethod = keyof typeof HTTP_METHOD;
-export type MonitorRegion = typeof MONITOR_REGION[keyof typeof MONITOR_REGION];
+export type MonitorRegion =
+  (typeof MONITOR_REGION)[keyof typeof MONITOR_REGION];
 
 // ========================================
 // ZOD SCHEMAS (Define first, infer types from them)
@@ -52,15 +53,28 @@ export type MonitorRegion = typeof MONITOR_REGION[keyof typeof MONITOR_REGION];
 // Base schemas
 export const MonitorStatusSchema = z.enum(["UP", "DOWN", "PENDING"]);
 export const IncidentStatusSchema = z.enum(["OPEN", "RESOLVED"]);
-export const HttpMethodSchema = z.enum(["GET", "POST", "PUT", "DELETE", "HEAD", "PATCH"]);
-export const MonitorRegionSchema = z.enum(["us-east-1", "eu-west-1", "ap-south-1"]);
+export const HttpMethodSchema = z.enum([
+  "GET",
+  "POST",
+  "PUT",
+  "DELETE",
+  "HEAD",
+  "PATCH",
+]);
+export const MonitorRegionSchema = z.enum([
+  "us-east-1",
+  "eu-west-1",
+  "ap-south-1",
+]);
 
 // Create Monitor Schema
 export const CreateMonitorSchema = z.object({
   name: z.string().min(1, "Monitor name is required").max(100, "Name too long"),
   url: z.string().url("Valid URL is required"),
   method: HttpMethodSchema.default("GET"),
-  expectedStatusCodes: z.array(z.number().int().min(100).max(599)).default([200, 201, 202, 204]),
+  expectedStatusCodes: z
+    .array(z.number().int().min(100).max(599))
+    .default([200, 201, 202, 204]),
   timeout: z.number().int().min(5).max(60).default(30),
   interval: z.number().int().min(1).max(60).default(5),
   retries: z.number().int().min(0).max(5).default(2),
@@ -324,9 +338,11 @@ export function parseUpdateMonitor(data: unknown): UpdateMonitor {
 /**
  * Safe parse with error handling
  */
-export function safeParseCreateMonitor(data: unknown): 
-  { success: true; data: CreateMonitor } | 
-  { success: false; error: z.ZodError } {
+export function safeParseCreateMonitor(
+  data: unknown
+):
+  | { success: true; data: CreateMonitor }
+  | { success: false; error: z.ZodError } {
   const result = CreateMonitorSchema.safeParse(data);
   if (result.success) {
     return { success: true, data: result.data };
@@ -337,9 +353,11 @@ export function safeParseCreateMonitor(data: unknown):
 /**
  * Safe parse with error handling
  */
-export function safeParseUpdateMonitor(data: unknown): 
-  { success: true; data: UpdateMonitor } | 
-  { success: false; error: z.ZodError } {
+export function safeParseUpdateMonitor(
+  data: unknown
+):
+  | { success: true; data: UpdateMonitor }
+  | { success: false; error: z.ZodError } {
   const result = UpdateMonitorSchema.safeParse(data);
   if (result.success) {
     return { success: true, data: result.data };
@@ -352,9 +370,9 @@ export function safeParseUpdateMonitor(data: unknown):
 // ========================================
 
 export const DEFAULT_CREATE_MONITOR: CreateMonitor = {
-  name: '',
-  url: '',
-  method: 'GET',
+  name: "",
+  url: "",
+  method: "GET",
   expectedStatusCodes: [200, 201, 202, 204],
   timeout: 30,
   interval: 5,
@@ -363,7 +381,7 @@ export const DEFAULT_CREATE_MONITOR: CreateMonitor = {
 };
 
 export const DEFAULT_UPDATE_MONITOR: Partial<UpdateMonitor> = {
-  method: 'GET',
+  method: "GET",
   expectedStatusCodes: [200],
   timeout: 30,
   interval: 5,

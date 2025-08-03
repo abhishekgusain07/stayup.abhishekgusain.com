@@ -1,31 +1,37 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Monitor } from '@/types/shared';
-import { MonitorStatusBadge } from './monitor-status-badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
-} from '@/components/ui/dropdown-menu';
-import { Badge } from '@/components/ui/badge';
-import { formatDistanceToNow } from 'date-fns';
-import Link from 'next/link';
-import { 
-  MoreVertical, 
-  Edit, 
-  Trash2, 
-  Power, 
-  PowerOff, 
+import { useState } from "react";
+import { Monitor } from "@/types/shared";
+import { MonitorStatusBadge } from "./monitor-status-badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { formatDistanceToNow } from "date-fns";
+import Link from "next/link";
+import {
+  MoreVertical,
+  Edit,
+  Trash2,
+  Power,
+  PowerOff,
   ExternalLink,
   Mail,
   Clock,
   Globe,
-  Eye
-} from 'lucide-react';
+  Eye,
+} from "lucide-react";
 
 interface MonitorCardProps {
   monitor: Monitor;
@@ -35,12 +41,12 @@ interface MonitorCardProps {
   onManageAlerts?: (monitor: Monitor) => void;
 }
 
-export function MonitorCard({ 
-  monitor, 
-  onEdit, 
-  onDelete, 
+export function MonitorCard({
+  monitor,
+  onEdit,
+  onDelete,
   onToggle,
-  onManageAlerts 
+  onManageAlerts,
 }: MonitorCardProps) {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -55,7 +61,7 @@ export function MonitorCard({
   };
 
   const formatLastChecked = (date: Date | null) => {
-    if (!date) return 'Never';
+    if (!date) return "Never";
     return formatDistanceToNow(new Date(date), { addSuffix: true });
   };
 
@@ -63,7 +69,9 @@ export function MonitorCard({
     if (minutes < 60) return `${minutes}m`;
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
-    return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}m` : `${hours}h`;
+    return remainingMinutes > 0
+      ? `${hours}h ${remainingMinutes}m`
+      : `${hours}h`;
   };
 
   return (
@@ -102,10 +110,7 @@ export function MonitorCard({
                   <Mail className="mr-2 h-4 w-4" />
                   Manage Alerts
                 </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={handleToggle}
-                  disabled={isLoading}
-                >
+                <DropdownMenuItem onClick={handleToggle} disabled={isLoading}>
                   {monitor.isActive ? (
                     <>
                       <PowerOff className="mr-2 h-4 w-4" />
@@ -120,9 +125,9 @@ export function MonitorCard({
                 </DropdownMenuItem>
                 {monitor.slug && (
                   <DropdownMenuItem asChild>
-                    <a 
-                      href={`/status/${monitor.slug}`} 
-                      target="_blank" 
+                    <a
+                      href={`/status/${monitor.slug}`}
+                      target="_blank"
                       rel="noopener noreferrer"
                     >
                       <ExternalLink className="mr-2 h-4 w-4" />
@@ -130,7 +135,7 @@ export function MonitorCard({
                     </a>
                   </DropdownMenuItem>
                 )}
-                <DropdownMenuItem 
+                <DropdownMenuItem
                   onClick={() => onDelete?.(monitor)}
                   className="text-red-600 focus:text-red-600"
                 >
@@ -149,7 +154,7 @@ export function MonitorCard({
             <div className="text-muted-foreground">Method</div>
             <Badge variant="secondary">{monitor.method}</Badge>
           </div>
-          
+
           <div className="space-y-1">
             <div className="text-muted-foreground">Interval</div>
             <div className="flex items-center gap-1">
@@ -157,30 +162,35 @@ export function MonitorCard({
               {formatInterval(monitor.interval)}
             </div>
           </div>
-          
+
           <div className="space-y-1">
             <div className="text-muted-foreground">Timeout</div>
             <div>{monitor.timeout}s</div>
           </div>
-          
+
           <div className="space-y-1">
             <div className="text-muted-foreground">Expected Status</div>
             <div className="flex flex-wrap gap-1">
-              {Array.isArray(monitor.expectedStatusCodes) 
-                ? monitor.expectedStatusCodes.map(code => (
-                    <Badge key={code} variant="outline" className="text-xs">
-                      {code}
-                    </Badge>
-                  ))
-                : <Badge variant="outline" className="text-xs">200</Badge>
-              }
+              {Array.isArray(monitor.expectedStatusCodes) ? (
+                monitor.expectedStatusCodes.map((code) => (
+                  <Badge key={code} variant="outline" className="text-xs">
+                    {code}
+                  </Badge>
+                ))
+              ) : (
+                <Badge variant="outline" className="text-xs">
+                  200
+                </Badge>
+              )}
             </div>
           </div>
         </div>
 
         <div className="pt-2 border-t text-xs text-muted-foreground">
           <div className="flex justify-between items-center">
-            <span>Last checked: {formatLastChecked(monitor.lastCheckedAt)}</span>
+            <span>
+              Last checked: {formatLastChecked(monitor.lastCheckedAt)}
+            </span>
             {!monitor.isActive && (
               <Badge variant="secondary" className="text-xs">
                 Disabled

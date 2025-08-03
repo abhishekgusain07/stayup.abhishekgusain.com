@@ -1,7 +1,7 @@
-import { MonitorsList } from '@/components/monitoring/monitors-list';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, Home } from 'lucide-react';
+import { MonitorsList } from "@/components/monitoring/monitors-list";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, Home } from "lucide-react";
 
 export default function MonitorsPage() {
   return (
@@ -12,7 +12,11 @@ export default function MonitorsPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Link href="/dashboard">
-                <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center gap-2"
+                >
                   <ArrowLeft className="h-4 w-4" />
                   Dashboard
                 </Button>

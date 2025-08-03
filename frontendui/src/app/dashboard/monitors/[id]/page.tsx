@@ -1,22 +1,28 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { Monitor, MonitorStatus, MONITOR_STATUS } from '@/types/shared';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { MonitorStatusBadge } from '@/components/monitoring/monitor-status-badge';
-import { EditMonitorDialog } from '@/components/monitoring/edit-monitor-dialog';
-import { ManageAlertsDialog } from '@/components/monitoring/manage-alerts-dialog';
-import { 
-  ArrowLeft, 
-  Home, 
-  Edit, 
-  Mail, 
-  Power, 
+import { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
+import { Monitor, MonitorStatus, MONITOR_STATUS } from "@/types/shared";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MonitorStatusBadge } from "@/components/monitoring/monitor-status-badge";
+import { EditMonitorDialog } from "@/components/monitoring/edit-monitor-dialog";
+import { ManageAlertsDialog } from "@/components/monitoring/manage-alerts-dialog";
+import {
+  ArrowLeft,
+  Home,
+  Edit,
+  Mail,
+  Power,
   PowerOff,
   Globe,
   Clock,
@@ -25,9 +31,9 @@ import {
   AlertTriangle,
   CheckCircle,
   ExternalLink,
-  Loader2
-} from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+  Loader2,
+} from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 
 interface MonitorDetailPageProps {
   params: {
@@ -39,7 +45,7 @@ export default function MonitorDetailPage() {
   const router = useRouter();
   const params = useParams();
   const monitorId = params?.id as string;
-  
+
   const [monitor, setMonitor] = useState<Monitor | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -57,12 +63,12 @@ export default function MonitorDetailPage() {
       setLoading(true);
       const response = await fetch(`/api/monitors/${monitorId}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch monitor');
+        throw new Error("Failed to fetch monitor");
       }
       const data = await response.json();
       setMonitor(data.data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setLoading(false);
     }
@@ -71,50 +77,50 @@ export default function MonitorDetailPage() {
   const handleUpdateMonitor = async (data: any) => {
     try {
       const response = await fetch(`/api/monitors/${monitorId}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update monitor');
+        throw new Error("Failed to update monitor");
       }
 
       const updatedData = await response.json();
       setMonitor(updatedData.data);
       setShowEditDialog(false);
     } catch (err) {
-      console.error('Failed to update monitor:', err);
+      console.error("Failed to update monitor:", err);
     }
   };
 
   const handleToggleMonitor = async () => {
     if (!monitor) return;
-    
+
     try {
       const response = await fetch(`/api/monitors/${monitorId}`, {
-        method: 'PATCH',
+        method: "PATCH",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ isActive: !monitor.isActive }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to toggle monitor');
+        throw new Error("Failed to toggle monitor");
       }
 
       const updatedData = await response.json();
       setMonitor(updatedData.data);
     } catch (err) {
-      console.error('Failed to toggle monitor:', err);
+      console.error("Failed to toggle monitor:", err);
     }
   };
 
   const formatLastChecked = (date: Date | null) => {
-    if (!date) return 'Never';
+    if (!date) return "Never";
     return formatDistanceToNow(new Date(date), { addSuffix: true });
   };
 
@@ -122,7 +128,9 @@ export default function MonitorDetailPage() {
     if (minutes < 60) return `${minutes}m`;
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
-    return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}m` : `${hours}h`;
+    return remainingMinutes > 0
+      ? `${hours}h ${remainingMinutes}m`
+      : `${hours}h`;
   };
 
   if (loading) {
@@ -143,7 +151,9 @@ export default function MonitorDetailPage() {
           <AlertTriangle className="h-12 w-12 text-red-500 mx-auto" />
           <div>
             <h3 className="text-lg font-semibold">Monitor not found</h3>
-            <p className="text-muted-foreground">{error || 'The requested monitor could not be found.'}</p>
+            <p className="text-muted-foreground">
+              {error || "The requested monitor could not be found."}
+            </p>
           </div>
           <Link href="/dashboard/monitors">
             <Button variant="outline">
@@ -164,7 +174,11 @@ export default function MonitorDetailPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Link href="/dashboard/monitors">
-                <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center gap-2"
+                >
                   <ArrowLeft className="h-4 w-4" />
                   Monitors
                 </Button>
@@ -175,7 +189,10 @@ export default function MonitorDetailPage() {
                   Dashboard
                 </Link>
                 <span className="mx-2">/</span>
-                <Link href="/dashboard/monitors" className="hover:text-foreground">
+                <Link
+                  href="/dashboard/monitors"
+                  className="hover:text-foreground"
+                >
                   Monitors
                 </Link>
                 <span className="mx-2">/</span>
@@ -183,25 +200,25 @@ export default function MonitorDetailPage() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setShowEditDialog(true)}
               >
                 <Edit className="mr-2 h-4 w-4" />
                 Edit
               </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setShowAlertsDialog(true)}
               >
                 <Mail className="mr-2 h-4 w-4" />
                 Alerts
               </Button>
-              <Button 
-                variant={monitor.isActive ? "destructive" : "default"} 
-                size="sm" 
+              <Button
+                variant={monitor.isActive ? "destructive" : "default"}
+                size="sm"
                 onClick={handleToggleMonitor}
               >
                 {monitor.isActive ? (
@@ -234,10 +251,10 @@ export default function MonitorDetailPage() {
                     {monitor.name}
                   </CardTitle>
                   <CardDescription className="text-base">
-                    <a 
-                      href={monitor.url} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
+                    <a
+                      href={monitor.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="hover:underline flex items-center gap-1"
                     >
                       {monitor.url}
@@ -256,28 +273,36 @@ export default function MonitorDetailPage() {
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
                 <div className="space-y-2">
-                  <div className="text-muted-foreground font-medium">Method</div>
+                  <div className="text-muted-foreground font-medium">
+                    Method
+                  </div>
                   <Badge variant="secondary">{monitor.method}</Badge>
                 </div>
-                
+
                 <div className="space-y-2">
-                  <div className="text-muted-foreground font-medium">Check Interval</div>
+                  <div className="text-muted-foreground font-medium">
+                    Check Interval
+                  </div>
                   <div className="flex items-center gap-1">
                     <Clock className="h-4 w-4" />
                     {formatInterval(monitor.interval)}
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
-                  <div className="text-muted-foreground font-medium">Timeout</div>
+                  <div className="text-muted-foreground font-medium">
+                    Timeout
+                  </div>
                   <div className="flex items-center gap-1">
                     <Timer className="h-4 w-4" />
                     {monitor.timeout}s
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
-                  <div className="text-muted-foreground font-medium">Last Checked</div>
+                  <div className="text-muted-foreground font-medium">
+                    Last Checked
+                  </div>
                   <div className="flex items-center gap-1">
                     <Activity className="h-4 w-4" />
                     {formatLastChecked(monitor.lastCheckedAt)}
@@ -306,12 +331,16 @@ export default function MonitorDetailPage() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Current Status</span>
+                      <span className="text-sm font-medium">
+                        Current Status
+                      </span>
                       <MonitorStatusBadge status={monitor.currentStatus} />
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium">Active</span>
-                      <Badge variant={monitor.isActive ? "default" : "secondary"}>
+                      <Badge
+                        variant={monitor.isActive ? "default" : "secondary"}
+                      >
                         {monitor.isActive ? "Yes" : "No"}
                       </Badge>
                     </div>
@@ -335,14 +364,21 @@ export default function MonitorDetailPage() {
                     <div>
                       <span className="text-sm font-medium">Status Codes</span>
                       <div className="flex flex-wrap gap-1 mt-2">
-                        {Array.isArray(monitor.expectedStatusCodes) 
-                          ? monitor.expectedStatusCodes.map(code => (
-                              <Badge key={code} variant="outline" className="text-xs">
-                                {code}
-                              </Badge>
-                            ))
-                          : <Badge variant="outline" className="text-xs">200</Badge>
-                        }
+                        {Array.isArray(monitor.expectedStatusCodes) ? (
+                          monitor.expectedStatusCodes.map((code) => (
+                            <Badge
+                              key={code}
+                              variant="outline"
+                              className="text-xs"
+                            >
+                              {code}
+                            </Badge>
+                          ))
+                        ) : (
+                          <Badge variant="outline" className="text-xs">
+                            200
+                          </Badge>
+                        )}
                       </div>
                     </div>
                     <div className="flex items-center justify-between">
@@ -365,28 +401,39 @@ export default function MonitorDetailPage() {
                 <CardContent className="space-y-6">
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Monitor Name</label>
-                      <div className="p-2 bg-muted rounded text-sm">{monitor.name}</div>
+                      <label className="text-sm font-medium">
+                        Monitor Name
+                      </label>
+                      <div className="p-2 bg-muted rounded text-sm">
+                        {monitor.name}
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <label className="text-sm font-medium">URL</label>
-                      <div className="p-2 bg-muted rounded text-sm break-all">{monitor.url}</div>
+                      <div className="p-2 bg-muted rounded text-sm break-all">
+                        {monitor.url}
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <label className="text-sm font-medium">HTTP Method</label>
-                      <div className="p-2 bg-muted rounded text-sm">{monitor.method}</div>
+                      <div className="p-2 bg-muted rounded text-sm">
+                        {monitor.method}
+                      </div>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Status Page Slug</label>
+                      <label className="text-sm font-medium">
+                        Status Page Slug
+                      </label>
                       <div className="p-2 bg-muted rounded text-sm">
                         {monitor.slug ? (
-                          <a 
-                            href={`/status/${monitor.slug}`} 
-                            target="_blank" 
+                          <a
+                            href={`/status/${monitor.slug}`}
+                            target="_blank"
                             rel="noopener noreferrer"
                             className="hover:underline text-blue-600 dark:text-blue-400"
                           >
-                            {monitor.slug} <ExternalLink className="h-3 w-3 inline" />
+                            {monitor.slug}{" "}
+                            <ExternalLink className="h-3 w-3 inline" />
                           </a>
                         ) : (
                           <span className="text-muted-foreground">Not set</span>
@@ -395,20 +442,25 @@ export default function MonitorDetailPage() {
                     </div>
                   </div>
 
-                  {monitor.headers && Object.keys(monitor.headers).length > 0 && (
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Custom Headers</label>
-                      <div className="p-3 bg-muted rounded">
-                        <pre className="text-xs font-mono">
-                          {JSON.stringify(monitor.headers, null, 2)}
-                        </pre>
+                  {monitor.headers &&
+                    Object.keys(monitor.headers).length > 0 && (
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">
+                          Custom Headers
+                        </label>
+                        <div className="p-3 bg-muted rounded">
+                          <pre className="text-xs font-mono">
+                            {JSON.stringify(monitor.headers, null, 2)}
+                          </pre>
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
 
                   {monitor.body && (
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Request Body</label>
+                      <label className="text-sm font-medium">
+                        Request Body
+                      </label>
                       <div className="p-3 bg-muted rounded">
                         <pre className="text-xs font-mono break-all">
                           {monitor.body}
@@ -433,7 +485,8 @@ export default function MonitorDetailPage() {
                     <Activity className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                     <h3 className="text-lg font-semibold mb-2">Coming Soon</h3>
                     <p className="text-muted-foreground">
-                      Monitor history and analytics will be available in the next update.
+                      Monitor history and analytics will be available in the
+                      next update.
                     </p>
                   </div>
                 </CardContent>

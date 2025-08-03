@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useMonitors } from '@/hooks/useMonitors';
-import { Monitor, CreateMonitor, UpdateMonitor } from '@/types/shared';
-import { MonitorCard } from './monitor-card';
-import { CreateMonitorDialog } from './create-monitor-dialog';
-import { EditMonitorDialog } from './edit-monitor-dialog';
-import { ManageAlertsDialog } from './manage-alerts-dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { useState } from "react";
+import { useMonitors } from "@/hooks/useMonitors";
+import { Monitor, CreateMonitor, UpdateMonitor } from "@/types/shared";
+import { MonitorCard } from "./monitor-card";
+import { CreateMonitorDialog } from "./create-monitor-dialog";
+import { EditMonitorDialog } from "./edit-monitor-dialog";
+import { ManageAlertsDialog } from "./manage-alerts-dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,14 +18,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { 
-  Plus, 
-  Search, 
-  RefreshCw,
-  AlertCircle,
-  Loader2
-} from 'lucide-react';
+} from "@/components/ui/alert-dialog";
+import { Plus, Search, RefreshCw, AlertCircle, Loader2 } from "lucide-react";
 
 export function MonitorsList() {
   const {
@@ -41,7 +35,7 @@ export function MonitorsList() {
     refetch,
   } = useMonitors();
 
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showAlertsDialog, setShowAlertsDialog] = useState(false);
@@ -50,9 +44,10 @@ export function MonitorsList() {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Filter monitors based on search query
-  const filteredMonitors = monitors.filter(monitor =>
-    monitor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    monitor.url.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredMonitors = monitors.filter(
+    (monitor) =>
+      monitor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      monitor.url.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleCreateMonitor = async (data: CreateMonitor) => {
@@ -60,7 +55,7 @@ export function MonitorsList() {
       await createMonitor(data);
       setShowCreateDialog(false);
     } catch (error) {
-      console.error('Failed to create monitor:', error);
+      console.error("Failed to create monitor:", error);
       // Dialog will remain open on error, allowing user to retry or cancel
     }
   };
@@ -165,12 +160,14 @@ export function MonitorsList() {
             className="pl-10"
           />
         </div>
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           onClick={handleRefresh}
           disabled={isRefreshing}
         >
-          <RefreshCw className={`mr-2 h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+          <RefreshCw
+            className={`mr-2 h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
+          />
           Refresh
         </Button>
       </div>
@@ -185,10 +182,9 @@ export function MonitorsList() {
             <div>
               <h3 className="text-lg font-semibold">No monitors found</h3>
               <p className="text-muted-foreground">
-                {searchQuery 
+                {searchQuery
                   ? `No monitors match "${searchQuery}"`
-                  : 'Get started by creating your first monitor'
-                }
+                  : "Get started by creating your first monitor"}
               </p>
             </div>
             {!searchQuery && (
@@ -264,8 +260,9 @@ export function MonitorsList() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Monitor</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete "{selectedMonitor?.name}"? This action cannot be undone.
-              All monitoring data and incidents will be preserved but the monitor will be deactivated.
+              Are you sure you want to delete "{selectedMonitor?.name}"? This
+              action cannot be undone. All monitoring data and incidents will be
+              preserved but the monitor will be deactivated.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db/drizzle";
-import { monitors, alertRecipients, incidents, monitorResults } from "@/db/schema";
-import { 
-  UpdateMonitorSchema, 
-  createSuccessResponse, 
-  createErrorResponse 
+import {
+  monitors,
+  alertRecipients,
+  incidents,
+  monitorResults,
+} from "@/db/schema";
+import {
+  UpdateMonitorSchema,
+  createSuccessResponse,
+  createErrorResponse,
 } from "@/types/shared";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
@@ -19,42 +24,32 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
     const session = await auth.api.getSession({
-      headers: await headers()
+      headers: await headers(),
     });
 
     if (!session) {
-      return NextResponse.json(
-        createErrorResponse("Authentication required"),
-        { status: 401 }
-      );
+      return NextResponse.json(createErrorResponse("Authentication required"), {
+        status: 401,
+      });
     }
 
     const monitor = await db
       .select()
       .from(monitors)
-      .where(
-        and(
-          eq(monitors.id, id),
-          eq(monitors.userId, session.user.id)
-        )
-      );
+      .where(and(eq(monitors.id, id), eq(monitors.userId, session.user.id)));
 
     if (monitor.length === 0) {
-      return NextResponse.json(
-        createErrorResponse("Monitor not found"),
-        { status: 404 }
-      );
+      return NextResponse.json(createErrorResponse("Monitor not found"), {
+        status: 404,
+      });
     }
 
-    return NextResponse.json(
-      createSuccessResponse(monitor[0])
-    );
+    return NextResponse.json(createSuccessResponse(monitor[0]));
   } catch (error) {
     console.error("Error fetching monitor:", error);
-    return NextResponse.json(
-      createErrorResponse("Failed to fetch monitor"),
-      { status: 500 }
-    );
+    return NextResponse.json(createErrorResponse("Failed to fetch monitor"), {
+      status: 500,
+    });
   }
 }
 
@@ -63,32 +58,25 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
     const session = await auth.api.getSession({
-      headers: await headers()
+      headers: await headers(),
     });
 
     if (!session) {
-      return NextResponse.json(
-        createErrorResponse("Authentication required"),
-        { status: 401 }
-      );
+      return NextResponse.json(createErrorResponse("Authentication required"), {
+        status: 401,
+      });
     }
 
     // Verify the monitor belongs to the user
     const existingMonitor = await db
       .select()
       .from(monitors)
-      .where(
-        and(
-          eq(monitors.id, id),
-          eq(monitors.userId, session.user.id)
-        )
-      );
+      .where(and(eq(monitors.id, id), eq(monitors.userId, session.user.id)));
 
     if (existingMonitor.length === 0) {
-      return NextResponse.json(
-        createErrorResponse("Monitor not found"),
-        { status: 404 }
-      );
+      return NextResponse.json(createErrorResponse("Monitor not found"), {
+        status: 404,
+      });
     }
 
     const body = await request.json();
@@ -98,7 +86,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json(
         createErrorResponse(
           "Validation failed",
-          validationResult.error.issues.map(i => i.message).join(", ")
+          validationResult.error.issues.map((i) => i.message).join(", ")
         ),
         { status: 400 }
       );
@@ -114,18 +102,28 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     // Only update provided fields
     if (updateData.name !== undefined) updateFields.name = updateData.name;
     if (updateData.url !== undefined) updateFields.url = updateData.url;
-    if (updateData.method !== undefined) updateFields.method = updateData.method;
+    if (updateData.method !== undefined)
+      updateFields.method = updateData.method;
     if (updateData.expectedStatusCodes !== undefined) {
-      updateFields.expectedStatusCodes = JSON.stringify(updateData.expectedStatusCodes);
+      updateFields.expectedStatusCodes = JSON.stringify(
+        updateData.expectedStatusCodes
+      );
     }
-    if (updateData.timeout !== undefined) updateFields.timeout = updateData.timeout;
-    if (updateData.interval !== undefined) updateFields.interval = updateData.interval;
-    if (updateData.retries !== undefined) updateFields.retries = updateData.retries;
+    if (updateData.timeout !== undefined)
+      updateFields.timeout = updateData.timeout;
+    if (updateData.interval !== undefined)
+      updateFields.interval = updateData.interval;
+    if (updateData.retries !== undefined)
+      updateFields.retries = updateData.retries;
     if (updateData.headers !== undefined) {
-      updateFields.headers = updateData.headers ? JSON.stringify(updateData.headers) : null;
+      updateFields.headers = updateData.headers
+        ? JSON.stringify(updateData.headers)
+        : null;
     }
-    if (updateData.body !== undefined) updateFields.body = updateData.body || null;
-    if (updateData.isActive !== undefined) updateFields.isActive = updateData.isActive;
+    if (updateData.body !== undefined)
+      updateFields.body = updateData.body || null;
+    if (updateData.isActive !== undefined)
+      updateFields.isActive = updateData.isActive;
 
     // Update the monitor
     const updatedMonitor = await db
@@ -138,17 +136,13 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     // TODO: If monitoring settings changed, update scheduling
 
     return NextResponse.json(
-      createSuccessResponse(
-        updatedMonitor[0],
-        "Monitor updated successfully"
-      )
+      createSuccessResponse(updatedMonitor[0], "Monitor updated successfully")
     );
   } catch (error) {
     console.error("Error updating monitor:", error);
-    return NextResponse.json(
-      createErrorResponse("Failed to update monitor"),
-      { status: 500 }
-    );
+    return NextResponse.json(createErrorResponse("Failed to update monitor"), {
+      status: 500,
+    });
   }
 }
 
@@ -157,32 +151,25 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
     const session = await auth.api.getSession({
-      headers: await headers()
+      headers: await headers(),
     });
 
     if (!session) {
-      return NextResponse.json(
-        createErrorResponse("Authentication required"),
-        { status: 401 }
-      );
+      return NextResponse.json(createErrorResponse("Authentication required"), {
+        status: 401,
+      });
     }
 
     // Verify the monitor belongs to the user
     const existingMonitor = await db
       .select()
       .from(monitors)
-      .where(
-        and(
-          eq(monitors.id, id),
-          eq(monitors.userId, session.user.id)
-        )
-      );
+      .where(and(eq(monitors.id, id), eq(monitors.userId, session.user.id)));
 
     if (existingMonitor.length === 0) {
-      return NextResponse.json(
-        createErrorResponse("Monitor not found"),
-        { status: 404 }
-      );
+      return NextResponse.json(createErrorResponse("Monitor not found"), {
+        status: 404,
+      });
     }
 
     // Soft delete approach - deactivate the monitor
@@ -201,17 +188,13 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     // TODO: Resolve any open incidents for this monitor
 
     return NextResponse.json(
-      createSuccessResponse(
-        updatedMonitor[0],
-        "Monitor deleted successfully"
-      )
+      createSuccessResponse(updatedMonitor[0], "Monitor deleted successfully")
     );
   } catch (error) {
     console.error("Error deleting monitor:", error);
-    return NextResponse.json(
-      createErrorResponse("Failed to delete monitor"),
-      { status: 500 }
-    );
+    return NextResponse.json(createErrorResponse("Failed to delete monitor"), {
+      status: 500,
+    });
   }
 }
 
@@ -220,32 +203,25 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
     const session = await auth.api.getSession({
-      headers: await headers()
+      headers: await headers(),
     });
 
     if (!session) {
-      return NextResponse.json(
-        createErrorResponse("Authentication required"),
-        { status: 401 }
-      );
+      return NextResponse.json(createErrorResponse("Authentication required"), {
+        status: 401,
+      });
     }
 
     // Verify the monitor belongs to the user
     const existingMonitor = await db
       .select()
       .from(monitors)
-      .where(
-        and(
-          eq(monitors.id, id),
-          eq(monitors.userId, session.user.id)
-        )
-      );
+      .where(and(eq(monitors.id, id), eq(monitors.userId, session.user.id)));
 
     if (existingMonitor.length === 0) {
-      return NextResponse.json(
-        createErrorResponse("Monitor not found"),
-        { status: 404 }
-      );
+      return NextResponse.json(createErrorResponse("Monitor not found"), {
+        status: 404,
+      });
     }
 
     const body = await request.json();
@@ -253,7 +229,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
     if (action === "toggle") {
       const newStatus = !existingMonitor[0].isActive;
-      
+
       const updatedMonitor = await db
         .update(monitors)
         .set({
@@ -271,10 +247,9 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    return NextResponse.json(
-      createErrorResponse("Invalid action"),
-      { status: 400 }
-    );
+    return NextResponse.json(createErrorResponse("Invalid action"), {
+      status: 400,
+    });
   } catch (error) {
     console.error("Error toggling monitor:", error);
     return NextResponse.json(

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useAlertRecipients } from '@/hooks/useAlertRecipients';
-import { Monitor, AlertRecipient } from '@/types/shared';
+import { useState } from "react";
+import { useAlertRecipients } from "@/hooks/useAlertRecipients";
+import { Monitor, AlertRecipient } from "@/types/shared";
 import {
   Dialog,
   DialogContent,
@@ -10,11 +10,11 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,17 +24,17 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { 
-  Mail, 
-  Plus, 
-  Trash2, 
-  Power, 
+} from "@/components/ui/alert-dialog";
+import {
+  Mail,
+  Plus,
+  Trash2,
+  Power,
   PowerOff,
   Loader2,
-  AlertCircle
-} from 'lucide-react';
-import { toast } from 'sonner';
+  AlertCircle,
+} from "lucide-react";
+import { toast } from "sonner";
 
 interface ManageAlertsDialogProps {
   open: boolean;
@@ -57,10 +57,11 @@ export function ManageAlertsDialog({
     refetch,
   } = useAlertRecipients(monitor.id);
 
-  const [newEmail, setNewEmail] = useState('');
+  const [newEmail, setNewEmail] = useState("");
   const [isAdding, setIsAdding] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [selectedRecipient, setSelectedRecipient] = useState<AlertRecipient | null>(null);
+  const [selectedRecipient, setSelectedRecipient] =
+    useState<AlertRecipient | null>(null);
 
   const handleAddRecipient = async () => {
     if (!newEmail.trim()) return;
@@ -68,14 +69,14 @@ export function ManageAlertsDialog({
     // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(newEmail)) {
-      toast.error('Please enter a valid email address');
+      toast.error("Please enter a valid email address");
       return;
     }
 
     setIsAdding(true);
     try {
       await addRecipient(newEmail.trim());
-      setNewEmail('');
+      setNewEmail("");
     } catch (error) {
       // Error handling is done in the hook
     } finally {
@@ -109,7 +110,7 @@ export function ManageAlertsDialog({
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleAddRecipient();
     }
   };
@@ -124,8 +125,8 @@ export function ManageAlertsDialog({
               Manage Alert Recipients
             </DialogTitle>
             <DialogDescription>
-              Configure email addresses that will receive downtime and recovery alerts for{' '}
-              <span className="font-medium">{monitor.name}</span>
+              Configure email addresses that will receive downtime and recovery
+              alerts for <span className="font-medium">{monitor.name}</span>
             </DialogDescription>
           </DialogHeader>
 
@@ -143,8 +144,8 @@ export function ManageAlertsDialog({
                   onKeyPress={handleKeyPress}
                   disabled={isAdding}
                 />
-                <Button 
-                  onClick={handleAddRecipient} 
+                <Button
+                  onClick={handleAddRecipient}
                   disabled={isAdding || !newEmail.trim()}
                 >
                   {isAdding ? (
@@ -159,7 +160,7 @@ export function ManageAlertsDialog({
             {/* Current Recipients */}
             <div className="space-y-2">
               <Label>Current Recipients</Label>
-              
+
               {loading ? (
                 <div className="flex items-center justify-center py-8">
                   <Loader2 className="h-6 w-6 animate-spin" />
@@ -178,7 +179,9 @@ export function ManageAlertsDialog({
                 <div className="text-center py-8 text-muted-foreground">
                   <Mail className="h-8 w-8 mx-auto mb-2 opacity-50" />
                   <p>No alert recipients configured</p>
-                  <p className="text-xs">Add an email address above to get started</p>
+                  <p className="text-xs">
+                    Add an email address above to get started
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-2 max-h-60 overflow-y-auto">
@@ -192,7 +195,8 @@ export function ManageAlertsDialog({
                         <div className="flex-1">
                           <div className="font-medium">{recipient.email}</div>
                           <div className="text-xs text-muted-foreground">
-                            Added {new Date(recipient.createdAt).toLocaleDateString()}
+                            Added{" "}
+                            {new Date(recipient.createdAt).toLocaleDateString()}
                           </div>
                         </div>
                         {!recipient.isActive && (
@@ -201,13 +205,17 @@ export function ManageAlertsDialog({
                           </Badge>
                         )}
                       </div>
-                      
+
                       <div className="flex items-center gap-1">
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => handleToggleRecipient(recipient)}
-                          title={recipient.isActive ? 'Disable alerts' : 'Enable alerts'}
+                          title={
+                            recipient.isActive
+                              ? "Disable alerts"
+                              : "Enable alerts"
+                          }
                         >
                           {recipient.isActive ? (
                             <PowerOff className="h-4 w-4" />
@@ -215,7 +223,7 @@ export function ManageAlertsDialog({
                             <Power className="h-4 w-4" />
                           )}
                         </Button>
-                        
+
                         <Button
                           variant="ghost"
                           size="sm"
@@ -236,9 +244,18 @@ export function ManageAlertsDialog({
             <div className="text-xs text-muted-foreground bg-muted/50 p-3 rounded">
               <div className="font-medium mb-1">Alert Types:</div>
               <ul className="space-y-1">
-                <li>• <strong>Downtime Alert:</strong> Sent when the monitor goes down</li>
-                <li>• <strong>Recovery Alert:</strong> Sent when the monitor comes back online</li>
-                <li>• <strong>Throttling:</strong> Maximum 1 alert per hour to prevent spam</li>
+                <li>
+                  • <strong>Downtime Alert:</strong> Sent when the monitor goes
+                  down
+                </li>
+                <li>
+                  • <strong>Recovery Alert:</strong> Sent when the monitor comes
+                  back online
+                </li>
+                <li>
+                  • <strong>Throttling:</strong> Maximum 1 alert per hour to
+                  prevent spam
+                </li>
               </ul>
             </div>
           </div>
@@ -257,9 +274,9 @@ export function ManageAlertsDialog({
           <AlertDialogHeader>
             <AlertDialogTitle>Remove Alert Recipient</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to remove{' '}
-              <span className="font-medium">{selectedRecipient?.email}</span>
-              {' '}from receiving alerts for this monitor?
+              Are you sure you want to remove{" "}
+              <span className="font-medium">{selectedRecipient?.email}</span>{" "}
+              from receiving alerts for this monitor?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

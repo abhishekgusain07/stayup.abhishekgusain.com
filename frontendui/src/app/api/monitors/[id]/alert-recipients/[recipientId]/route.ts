@@ -15,32 +15,25 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
     const { id, recipientId } = await params;
     const session = await auth.api.getSession({
-      headers: await headers()
+      headers: await headers(),
     });
 
     if (!session) {
-      return NextResponse.json(
-        createErrorResponse("Authentication required"),
-        { status: 401 }
-      );
+      return NextResponse.json(createErrorResponse("Authentication required"), {
+        status: 401,
+      });
     }
 
     // Verify the monitor belongs to the user
     const monitor = await db
       .select()
       .from(monitors)
-      .where(
-        and(
-          eq(monitors.id, id),
-          eq(monitors.userId, session.user.id)
-        )
-      );
+      .where(and(eq(monitors.id, id), eq(monitors.userId, session.user.id)));
 
     if (monitor.length === 0) {
-      return NextResponse.json(
-        createErrorResponse("Monitor not found"),
-        { status: 404 }
-      );
+      return NextResponse.json(createErrorResponse("Monitor not found"), {
+        status: 404,
+      });
     }
 
     // Verify the alert recipient exists and belongs to this monitor
@@ -62,15 +55,10 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     }
 
     // Delete the alert recipient
-    await db
-      .delete(alertRecipients)
-      .where(eq(alertRecipients.id, recipientId));
+    await db.delete(alertRecipients).where(eq(alertRecipients.id, recipientId));
 
     return NextResponse.json(
-      createSuccessResponse(
-        null,
-        "Alert recipient removed successfully"
-      )
+      createSuccessResponse(null, "Alert recipient removed successfully")
     );
   } catch (error) {
     console.error("Error deleting alert recipient:", error);
@@ -86,32 +74,25 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
   try {
     const { id, recipientId } = await params;
     const session = await auth.api.getSession({
-      headers: await headers()
+      headers: await headers(),
     });
 
     if (!session) {
-      return NextResponse.json(
-        createErrorResponse("Authentication required"),
-        { status: 401 }
-      );
+      return NextResponse.json(createErrorResponse("Authentication required"), {
+        status: 401,
+      });
     }
 
     // Verify the monitor belongs to the user
     const monitor = await db
       .select()
       .from(monitors)
-      .where(
-        and(
-          eq(monitors.id, id),
-          eq(monitors.userId, session.user.id)
-        )
-      );
+      .where(and(eq(monitors.id, id), eq(monitors.userId, session.user.id)));
 
     if (monitor.length === 0) {
-      return NextResponse.json(
-        createErrorResponse("Monitor not found"),
-        { status: 404 }
-      );
+      return NextResponse.json(createErrorResponse("Monitor not found"), {
+        status: 404,
+      });
     }
 
     // Verify the alert recipient exists and belongs to this monitor
@@ -137,7 +118,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
     if (action === "toggle") {
       const newStatus = !recipient[0].isActive;
-      
+
       const updatedRecipient = await db
         .update(alertRecipients)
         .set({
@@ -155,10 +136,9 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    return NextResponse.json(
-      createErrorResponse("Invalid action"),
-      { status: 400 }
-    );
+    return NextResponse.json(createErrorResponse("Invalid action"), {
+      status: 400,
+    });
   } catch (error) {
     console.error("Error toggling alert recipient:", error);
     return NextResponse.json(

@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db/drizzle";
 import { monitors, user } from "@/db/schema";
-import { 
-  CreateMonitorSchema, 
-  createSuccessResponse, 
+import {
+  CreateMonitorSchema,
+  createSuccessResponse,
   createErrorResponse,
   getSubscriptionLimits,
-  type Monitor 
+  type Monitor,
 } from "@/types/shared";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
@@ -17,19 +17,21 @@ import { nanoid } from "nanoid";
 export async function GET(request: NextRequest) {
   try {
     const session = await auth.api.getSession({
-      headers: await headers()
+      headers: await headers(),
     });
 
     if (!session) {
-      return NextResponse.json(
-        createErrorResponse("Authentication required"),
-        { status: 401 }
-      );
+      return NextResponse.json(createErrorResponse("Authentication required"), {
+        status: 401,
+      });
     }
 
     const { searchParams } = new URL(request.url);
-    const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
-    const limit = Math.min(50, Math.max(1, parseInt(searchParams.get('limit') || '10')));
+    const page = Math.max(1, parseInt(searchParams.get("page") || "1"));
+    const limit = Math.min(
+      50,
+      Math.max(1, parseInt(searchParams.get("limit") || "10"))
+    );
     const offset = (page - 1) * limit;
 
     // Get monitors for the user
@@ -63,10 +65,9 @@ export async function GET(request: NextRequest) {
     );
   } catch (error) {
     console.error("Error fetching monitors:", error);
-    return NextResponse.json(
-      createErrorResponse("Failed to fetch monitors"),
-      { status: 500 }
-    );
+    return NextResponse.json(createErrorResponse("Failed to fetch monitors"), {
+      status: 500,
+    });
   }
 }
 
@@ -74,14 +75,13 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await auth.api.getSession({
-      headers: await headers()
+      headers: await headers(),
     });
 
     if (!session) {
-      return NextResponse.json(
-        createErrorResponse("Authentication required"),
-        { status: 401 }
-      );
+      return NextResponse.json(createErrorResponse("Authentication required"), {
+        status: 401,
+      });
     }
 
     const body = await request.json();
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         createErrorResponse(
           "Validation failed",
-          validationResult.error.issues.map(i => i.message).join(", ")
+          validationResult.error.issues.map((i) => i.message).join(", ")
         ),
         { status: 400 }
       );
@@ -106,7 +106,8 @@ export async function POST(request: NextRequest) {
       .from(user)
       .where(eq(user.id, userId));
 
-    const userSubscription = userSubscriptionResult?.[0]?.subscription || "BASIC";
+    const userSubscription =
+      userSubscriptionResult?.[0]?.subscription || "BASIC";
     const limits = getSubscriptionLimits(userSubscription);
 
     // Count current monitors
@@ -114,10 +115,7 @@ export async function POST(request: NextRequest) {
       .select({ count: monitors.id })
       .from(monitors)
       .where(
-        and(
-          eq(monitors.userId, session.user.id),
-          eq(monitors.isActive, true)
-        )
+        and(eq(monitors.userId, session.user.id), eq(monitors.isActive, true))
       );
 
     if (limits.monitors !== -1 && currentMonitors.length >= limits.monitors) {
@@ -174,7 +172,9 @@ export async function POST(request: NextRequest) {
         timeout: monitorData.timeout,
         interval: monitorData.interval,
         retries: monitorData.retries,
-        headers: monitorData.headers ? JSON.stringify(monitorData.headers) : null,
+        headers: monitorData.headers
+          ? JSON.stringify(monitorData.headers)
+          : null,
         body: monitorData.body || null,
         slug,
         isActive: monitorData.isActive,
@@ -188,17 +188,13 @@ export async function POST(request: NextRequest) {
     // TODO: Trigger initial monitoring job
 
     return NextResponse.json(
-      createSuccessResponse(
-        newMonitor[0],
-        "Monitor created successfully"
-      ),
+      createSuccessResponse(newMonitor[0], "Monitor created successfully"),
       { status: 201 }
     );
   } catch (error) {
     console.error("Error creating monitor:", error);
-    return NextResponse.json(
-      createErrorResponse("Failed to create monitor"),
-      { status: 500 }
-    );
+    return NextResponse.json(createErrorResponse("Failed to create monitor"), {
+      status: 500,
+    });
   }
 }

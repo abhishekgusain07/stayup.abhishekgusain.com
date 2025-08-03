@@ -18,18 +18,16 @@ type FeedbackInput = z.infer<typeof feedbackSchema>;
 
 export async function submitFeedback(input: FeedbackInput) {
   try {
-
     const session = await auth.api.getSession({
-      headers: await headers() 
-  })
+      headers: await headers(),
+    });
 
-  
     // Validate input
     const validatedInput = feedbackSchema.parse(input);
-    if(!session?.user || session?.user?.id !== validatedInput.userId){
+    if (!session?.user || session?.user?.id !== validatedInput.userId) {
       throw new Error("Unauthorized");
     }
-    
+
     // Insert into database
     await db.insert(feedback).values({
       id: nanoid(),
@@ -38,13 +36,13 @@ export async function submitFeedback(input: FeedbackInput) {
       userId: validatedInput.userId,
       createdTime: new Date(),
     });
-    
+
     // Revalidate any paths that might display feedback stats
     revalidatePath("/dashboard");
-    
+
     return { success: true };
   } catch (error) {
     console.error("Failed to submit feedback:", error);
     throw new Error("Failed to submit feedback. Please try again.");
   }
-} 
+}

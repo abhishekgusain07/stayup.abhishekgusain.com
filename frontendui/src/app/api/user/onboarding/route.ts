@@ -12,9 +12,9 @@ export async function POST(request: Request) {
   try {
     // Get the current user's session
     const session = await auth.api.getSession({
-        headers: await headers() 
+      headers: await headers(),
     });
-    
+
     if (!session?.user || !session.user.id) {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
@@ -26,7 +26,8 @@ export async function POST(request: Request) {
     const data = await request.json();
 
     // Update the user in the database
-    await db.update(user)
+    await db
+      .update(user)
       .set({
         name: data.name || session.user.name,
         onboardingCompleted: true,
@@ -37,14 +38,14 @@ export async function POST(request: Request) {
     // Create response with success message
     const response = NextResponse.json({
       success: true,
-      message: "Onboarding completed successfully"
+      message: "Onboarding completed successfully",
     });
 
     // Set our dedicated cookie for middleware to check
     // Include user ID in the cookie value to make it user-specific
     const cookieValue = JSON.stringify({
       userId: session.user.id,
-      completed: true
+      completed: true,
     });
 
     response.cookies.set({
@@ -54,7 +55,7 @@ export async function POST(request: Request) {
       maxAge: 60 * 60 * 24 * 365, // 1 year in seconds
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax"
+      sameSite: "lax",
     });
 
     return response;
@@ -65,4 +66,4 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
-} 
+}

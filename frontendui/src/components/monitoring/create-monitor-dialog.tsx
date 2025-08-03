@@ -1,9 +1,14 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { CreateMonitor, CreateMonitorSchema, HTTP_METHOD, HttpMethod } from '@/types/shared';
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  CreateMonitor,
+  CreateMonitorSchema,
+  HTTP_METHOD,
+  HttpMethod,
+} from "@/types/shared";
 import {
   Dialog,
   DialogContent,
@@ -11,8 +16,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -21,20 +26,20 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { X, AlertCircle } from 'lucide-react';
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { X, AlertCircle } from "lucide-react";
 
 interface CreateMonitorDialogProps {
   open: boolean;
@@ -50,24 +55,26 @@ export function CreateMonitorDialog({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [statusCodes, setStatusCodes] = useState<number[]>([200]);
-  const [newStatusCode, setNewStatusCode] = useState('');
-  const [customHeaders, setCustomHeaders] = useState<Record<string, string>>({});
-  const [newHeaderKey, setNewHeaderKey] = useState('');
-  const [newHeaderValue, setNewHeaderValue] = useState('');
+  const [newStatusCode, setNewStatusCode] = useState("");
+  const [customHeaders, setCustomHeaders] = useState<Record<string, string>>(
+    {}
+  );
+  const [newHeaderKey, setNewHeaderKey] = useState("");
+  const [newHeaderValue, setNewHeaderValue] = useState("");
 
   const form = useForm({
     resolver: zodResolver(CreateMonitorSchema),
     defaultValues: {
-      name: '',
-      url: '',
-      method: 'GET', // Use string literal instead of HTTP_METHOD.GET
+      name: "",
+      url: "",
+      method: "GET", // Use string literal instead of HTTP_METHOD.GET
       expectedStatusCodes: [200],
       timeout: 30,
       interval: 5,
       retries: 2,
       headers: undefined,
-      body: '',
-      slug: '',
+      body: "",
+      slug: "",
       isActive: true,
     },
   });
@@ -79,22 +86,28 @@ export function CreateMonitorDialog({
       const submitData = {
         ...data,
         expectedStatusCodes: statusCodes,
-        headers: Object.keys(customHeaders).length > 0 ? customHeaders : undefined,
+        headers:
+          Object.keys(customHeaders).length > 0 ? customHeaders : undefined,
       };
       await onSubmit(submitData);
       handleClose();
     } catch (error) {
-      console.error('Failed to create monitor:', error);
+      console.error("Failed to create monitor:", error);
       // Extract meaningful error message
-      let errorMessage = 'Failed to create monitor. Please try again.';
+      let errorMessage = "Failed to create monitor. Please try again.";
       if (error instanceof Error) {
-        if (error.message.includes('timeout')) {
-          errorMessage = 'Request timed out. The server took too long to respond. Please check your connection and try again.';
-        } else if (error.message.includes('Network Error') || error.message.includes('Failed to fetch')) {
-          errorMessage = 'Network error. Please check your internet connection and try again.';
-        } else if (error.message.includes('limit reached')) {
+        if (error.message.includes("timeout")) {
+          errorMessage =
+            "Request timed out. The server took too long to respond. Please check your connection and try again.";
+        } else if (
+          error.message.includes("Network Error") ||
+          error.message.includes("Failed to fetch")
+        ) {
+          errorMessage =
+            "Network error. Please check your internet connection and try again.";
+        } else if (error.message.includes("limit reached")) {
           errorMessage = error.message;
-        } else if (error.message.includes('Slug already exists')) {
+        } else if (error.message.includes("Slug already exists")) {
           errorMessage = error.message;
         } else {
           errorMessage = error.message;
@@ -110,9 +123,9 @@ export function CreateMonitorDialog({
     form.reset();
     setStatusCodes([200]);
     setCustomHeaders({});
-    setNewStatusCode('');
-    setNewHeaderKey('');
-    setNewHeaderValue('');
+    setNewStatusCode("");
+    setNewHeaderKey("");
+    setNewHeaderValue("");
     setError(null);
     setIsLoading(false);
     onOpenChange(false);
@@ -122,38 +135,41 @@ export function CreateMonitorDialog({
     const code = parseInt(newStatusCode);
     if (code >= 100 && code <= 599 && !statusCodes.includes(code)) {
       setStatusCodes([...statusCodes, code]);
-      setNewStatusCode('');
+      setNewStatusCode("");
     }
   };
 
   const removeStatusCode = (code: number) => {
     if (statusCodes.length > 1) {
-      setStatusCodes(statusCodes.filter(c => c !== code));
+      setStatusCodes(statusCodes.filter((c) => c !== code));
     }
   };
 
   const addHeader = () => {
     if (newHeaderKey && newHeaderValue) {
-      setCustomHeaders(prev => ({
+      setCustomHeaders((prev) => ({
         ...prev,
         [newHeaderKey]: newHeaderValue,
       }));
-      setNewHeaderKey('');
-      setNewHeaderValue('');
+      setNewHeaderKey("");
+      setNewHeaderValue("");
     }
   };
 
   const removeHeader = (key: string) => {
-    setCustomHeaders(prev => {
+    setCustomHeaders((prev) => {
       const newHeaders = { ...prev };
       delete newHeaders[key];
       return newHeaders;
     });
   };
 
-  const selectedMethod = form.watch('method');
-  const showBodyField = selectedMethod !== undefined &&
-  ([HTTP_METHOD.POST, HTTP_METHOD.PUT, HTTP_METHOD.PATCH] as HttpMethod[]).includes(selectedMethod);
+  const selectedMethod = form.watch("method");
+  const showBodyField =
+    selectedMethod !== undefined &&
+    (
+      [HTTP_METHOD.POST, HTTP_METHOD.PUT, HTTP_METHOD.PATCH] as HttpMethod[]
+    ).includes(selectedMethod);
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
@@ -172,7 +188,10 @@ export function CreateMonitorDialog({
         )}
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-6"
+          >
             {/* Basic Information */}
             <div className="space-y-4">
               <FormField
@@ -199,10 +218,10 @@ export function CreateMonitorDialog({
                   <FormItem>
                     <FormLabel>URL *</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="https://example.com" 
-                        type="url" 
-                        {...field} 
+                      <Input
+                        placeholder="https://example.com"
+                        type="url"
+                        {...field}
                       />
                     </FormControl>
                     <FormDescription>
@@ -220,7 +239,10 @@ export function CreateMonitorDialog({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>HTTP Method</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue />
@@ -266,8 +288,8 @@ export function CreateMonitorDialog({
                   <Badge key={code} variant="secondary" className="gap-1">
                     {code}
                     {statusCodes.length > 1 && (
-                      <X 
-                        className="h-3 w-3 cursor-pointer" 
+                      <X
+                        className="h-3 w-3 cursor-pointer"
                         onClick={() => removeStatusCode(code)}
                       />
                     )}
@@ -303,12 +325,14 @@ export function CreateMonitorDialog({
                     <FormLabel>Check Interval</FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <Input 
-                          type="number" 
-                          min="1" 
-                          max="60" 
+                        <Input
+                          type="number"
+                          min="1"
+                          max="60"
                           {...field}
-                          onChange={(e) => field.onChange(parseInt(e.target.value))}
+                          onChange={(e) =>
+                            field.onChange(parseInt(e.target.value))
+                          }
                         />
                         <span className="absolute right-3 top-2.5 text-sm text-muted-foreground">
                           min
@@ -328,12 +352,14 @@ export function CreateMonitorDialog({
                     <FormLabel>Timeout</FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <Input 
-                          type="number" 
-                          min="5" 
-                          max="60" 
+                        <Input
+                          type="number"
+                          min="5"
+                          max="60"
                           {...field}
-                          onChange={(e) => field.onChange(parseInt(e.target.value))}
+                          onChange={(e) =>
+                            field.onChange(parseInt(e.target.value))
+                          }
                         />
                         <span className="absolute right-3 top-2.5 text-sm text-muted-foreground">
                           sec
@@ -352,12 +378,14 @@ export function CreateMonitorDialog({
                   <FormItem>
                     <FormLabel>Retries</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="number" 
-                        min="0" 
-                        max="5" 
+                      <Input
+                        type="number"
+                        min="0"
+                        max="5"
                         {...field}
-                        onChange={(e) => field.onChange(parseInt(e.target.value))}
+                        onChange={(e) =>
+                          field.onChange(parseInt(e.target.value))
+                        }
                       />
                     </FormControl>
                     <FormMessage />
@@ -370,7 +398,10 @@ export function CreateMonitorDialog({
             <div className="space-y-2">
               <FormLabel>Custom Headers</FormLabel>
               {Object.entries(customHeaders).map(([key, value]) => (
-                <div key={key} className="flex items-center gap-2 p-2 bg-muted rounded">
+                <div
+                  key={key}
+                  className="flex items-center gap-2 p-2 bg-muted rounded"
+                >
                   <span className="font-mono text-sm">{key}:</span>
                   <span className="font-mono text-sm flex-1">{value}</span>
                   <Button
@@ -409,10 +440,10 @@ export function CreateMonitorDialog({
                   <FormItem>
                     <FormLabel>Request Body</FormLabel>
                     <FormControl>
-                      <Textarea 
+                      <Textarea
                         placeholder='{"key": "value"}'
                         className="font-mono"
-                        {...field} 
+                        {...field}
                       />
                     </FormControl>
                     <FormDescription>
@@ -447,15 +478,11 @@ export function CreateMonitorDialog({
             />
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleClose}
-              >
+              <Button type="button" variant="outline" onClick={handleClose}>
                 Cancel
               </Button>
               <Button type="submit" disabled={isLoading}>
-                {isLoading ? 'Creating Monitor...' : 'Create Monitor'}
+                {isLoading ? "Creating Monitor..." : "Create Monitor"}
               </Button>
             </DialogFooter>
           </form>

@@ -57,12 +57,8 @@ const PricingHeader = ({
       </div>
     </div>
 
-    <h2 className="text-3xl md:text-4xl font-bold pb-2">
-      {title}
-    </h2>
-    <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
-      {subtitle}
-    </p>
+    <h2 className="text-3xl md:text-4xl font-bold pb-2">{title}</h2>
+    <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">{subtitle}</p>
   </div>
 );
 
@@ -104,10 +100,10 @@ const PricingCard = ({
   return (
     <Card
       className={cn(
-        "w-full max-w-sm flex flex-col justify-between px-2 py-1 backdrop-blur-sm transition-all duration-200 hover:shadow-lg h-full", 
+        "w-full max-w-sm flex flex-col justify-between px-2 py-1 backdrop-blur-sm transition-all duration-200 hover:shadow-lg h-full",
         {
           "relative border-2 border-primary": popular,
-          "relative": exclusive,
+          relative: exclusive,
         }
       )}
     >
@@ -116,7 +112,7 @@ const PricingCard = ({
           <p className="text-sm font-medium text-white">Most Popular</p>
         </div>
       )}
-      
+
       {exclusive && (
         <div className="absolute -top-3 left-0 right-0 mx-auto w-fit rounded-full bg-primary px-3 py-1">
           <p className="text-sm font-medium text-white">Enterprise</p>
@@ -126,9 +122,7 @@ const PricingCard = ({
       <div>
         <CardHeader className="space-y-2 pb-4">
           <CardTitle className="text-xl">{title}</CardTitle>
-          <CardDescription>
-            {description}
-          </CardDescription>
+          <CardDescription>{description}</CardDescription>
         </CardHeader>
 
         <CardContent className="pb-4">
@@ -136,18 +130,14 @@ const PricingCard = ({
             <span className="text-4xl font-bold">
               ${isYearly ? yearlyPrice : monthlyPrice}
             </span>
-            <span className="text-muted-foreground">
-              /mo
-            </span>
+            <span className="text-muted-foreground">/mo</span>
           </div>
 
           <div className="mt-6 space-y-2">
             {features.map((feature) => (
               <div key={feature} className="flex gap-2">
                 <CheckCircle2 className="h-5 w-5 text-green-600" />
-                <p className="text-muted-foreground">
-                  {feature}
-                </p>
+                <p className="text-muted-foreground">{feature}</p>
               </div>
             ))}
           </div>
@@ -227,7 +217,7 @@ export default function Pricing() {
         "Authentication & user management",
         "Basic Stripe integration",
         "Community support",
-        "1 team member"
+        "1 team member",
       ],
       priceIdMonthly: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID,
       priceIdYearly: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID,
@@ -244,7 +234,7 @@ export default function Pricing() {
         "Multi-tier subscription management",
         "Priority email support",
         "Up to 5 team members",
-        "Custom branding"
+        "Custom branding",
       ],
       priceIdMonthly: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID,
       priceIdYearly: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID,
@@ -263,7 +253,7 @@ export default function Pricing() {
         "Custom integrations",
         "SLA guarantees",
         "White-labeling",
-        "Dedicated account manager"
+        "Dedicated account manager",
       ],
       priceIdMonthly: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID,
       priceIdYearly: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID,
@@ -292,9 +282,9 @@ export default function Pricing() {
               key={plan.title}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ 
-                duration: 0.5, 
-                delay: index * 0.1
+              transition={{
+                duration: 0.5,
+                delay: index * 0.1,
               }}
               viewport={{ once: true }}
             >

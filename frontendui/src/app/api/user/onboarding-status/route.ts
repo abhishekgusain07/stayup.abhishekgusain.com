@@ -14,41 +14,42 @@ export async function GET() {
   try {
     // Get the current user's session
     const session = await auth.api.getSession({
-      headers: await headers()
+      headers: await headers(),
     });
-    
+
     if (!session?.user?.id) {
       // Not authenticated
-      return NextResponse.json({ 
+      return NextResponse.json({
         authenticated: false,
-        onboardingCompleted: false 
+        onboardingCompleted: false,
       });
     }
-    
+
     // Check the database for onboarding status
-    const userData = await db.select({
-      onboardingCompleted: user.onboardingCompleted
-    })
-    .from(user)
-    .where(eq(user.id, session.user.id))
-    .execute();
-    
+    const userData = await db
+      .select({
+        onboardingCompleted: user.onboardingCompleted,
+      })
+      .from(user)
+      .where(eq(user.id, session.user.id))
+      .execute();
+
     const hasCompletedOnboarding = userData[0]?.onboardingCompleted || false;
-    
+
     // Return just the status as JSON
     return NextResponse.json({
       authenticated: true,
-      onboardingCompleted: hasCompletedOnboarding
+      onboardingCompleted: hasCompletedOnboarding,
     });
   } catch (error) {
     console.error("Error checking onboarding status:", error);
     return NextResponse.json(
-      { 
+      {
         authenticated: false,
         onboardingCompleted: false,
-        error: "Failed to check onboarding status" 
+        error: "Failed to check onboarding status",
       },
       { status: 500 }
     );
   }
-} 
+}

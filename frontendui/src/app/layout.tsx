@@ -16,7 +16,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Stayup - SaaS Template",
-  description: "Comprehensive SaaS starter template to ship your ideas blazingly fast",
+  description:
+    "Comprehensive SaaS starter template to ship your ideas blazingly fast",
 };
 
 export default function RootLayout({
@@ -28,20 +29,16 @@ export default function RootLayout({
       <meta property="og:image:type" content="image/png" />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
-      <meta
-        property="og:site_name"
-        content="Stayup"
-      />
-      <meta
-        property="og:url"
-        content="https://Stayup.dev/"
-      />
+      <meta property="og:site_name" content="Stayup" />
+      <meta property="og:url" content="https://Stayup.dev/" />
       <meta name="twitter:image" content="/Stayup.png" />
       <meta name="twitter:image:type" content="image/png" />
       <meta name="twitter:image:width" content="1200" />
       <meta name="twitter:image:height" content="630" />
       <meta name="twitter:card" content="summary_large_image" />
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
         <PostHogProvider>
           <Toaster />
           {children}

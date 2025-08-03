@@ -1,5 +1,5 @@
-import React from 'react';
-import Link from 'next/link';
+import React from "react";
+import Link from "next/link";
 
 // --- Icon Components ---
 
@@ -62,7 +62,6 @@ const LayersIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-
 // --- Main 404 Page Component ---
 
 const NotFoundPage = () => {
@@ -83,7 +82,8 @@ const NotFoundPage = () => {
           <h1 className="mb-2 text-4xl font-bold tracking-tight">404</h1>
           <h2 className="mb-4 text-2xl font-semibold">Page Not Found</h2>
           <p className="mb-8 max-w-md text-muted-foreground">
-            Sorry, we couldn&apos;t find the page you&apos;re looking for. Perhaps it&apos;s been moved or no longer exists.
+            Sorry, we couldn&apos;t find the page you&apos;re looking for.
+            Perhaps it&apos;s been moved or no longer exists.
           </p>
 
           {/* Action Buttons */}

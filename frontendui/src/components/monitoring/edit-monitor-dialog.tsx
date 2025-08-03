@@ -1,9 +1,16 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Monitor, UpdateMonitor, UpdateMonitorSchema,DEFAULT_UPDATE_MONITOR, HTTP_METHOD, HttpMethod } from '@/types/shared';
+import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Monitor,
+  UpdateMonitor,
+  UpdateMonitorSchema,
+  DEFAULT_UPDATE_MONITOR,
+  HTTP_METHOD,
+  HttpMethod,
+} from "@/types/shared";
 import {
   Dialog,
   DialogContent,
@@ -11,8 +18,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -21,19 +28,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
-import { X } from 'lucide-react';
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import { X } from "lucide-react";
 
 interface EditMonitorDialogProps {
   open: boolean;
@@ -50,10 +57,12 @@ export function EditMonitorDialog({
 }: EditMonitorDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [statusCodes, setStatusCodes] = useState<number[]>([200]);
-  const [newStatusCode, setNewStatusCode] = useState('');
-  const [customHeaders, setCustomHeaders] = useState<Record<string, string>>({});
-  const [newHeaderKey, setNewHeaderKey] = useState('');
-  const [newHeaderValue, setNewHeaderValue] = useState('');
+  const [newStatusCode, setNewStatusCode] = useState("");
+  const [customHeaders, setCustomHeaders] = useState<Record<string, string>>(
+    {}
+  );
+  const [newHeaderKey, setNewHeaderKey] = useState("");
+  const [newHeaderValue, setNewHeaderValue] = useState("");
 
   const form = useForm<UpdateMonitor>({
     resolver: zodResolver(UpdateMonitorSchema),
@@ -64,8 +73,8 @@ export function EditMonitorDialog({
   useEffect(() => {
     if (monitor && open) {
       const monitorHeaders = monitor.headers || {};
-      const monitorStatusCodes = Array.isArray(monitor.expectedStatusCodes) 
-        ? monitor.expectedStatusCodes 
+      const monitorStatusCodes = Array.isArray(monitor.expectedStatusCodes)
+        ? monitor.expectedStatusCodes
         : [200];
 
       form.reset({
@@ -76,8 +85,9 @@ export function EditMonitorDialog({
         timeout: monitor.timeout,
         interval: monitor.interval,
         retries: monitor.retries,
-        headers: Object.keys(monitorHeaders).length > 0 ? monitorHeaders : undefined,
-        body: monitor.body || '',
+        headers:
+          Object.keys(monitorHeaders).length > 0 ? monitorHeaders : undefined,
+        body: monitor.body || "",
         isActive: monitor.isActive,
       });
 
@@ -88,18 +98,19 @@ export function EditMonitorDialog({
 
   const handleSubmit = async (data: UpdateMonitor) => {
     if (!monitor) return;
-    
+
     setIsLoading(true);
     try {
       const submitData = {
         ...data,
         expectedStatusCodes: statusCodes,
-        headers: Object.keys(customHeaders).length > 0 ? customHeaders : undefined,
+        headers:
+          Object.keys(customHeaders).length > 0 ? customHeaders : undefined,
       };
       await onSubmit(submitData);
       handleClose();
     } catch (error) {
-      console.error('Failed to update monitor:', error);
+      console.error("Failed to update monitor:", error);
     } finally {
       setIsLoading(false);
     }
@@ -109,9 +120,9 @@ export function EditMonitorDialog({
     form.reset();
     setStatusCodes([200]);
     setCustomHeaders({});
-    setNewStatusCode('');
-    setNewHeaderKey('');
-    setNewHeaderValue('');
+    setNewStatusCode("");
+    setNewHeaderKey("");
+    setNewHeaderValue("");
     onOpenChange(false);
   };
 
@@ -119,39 +130,41 @@ export function EditMonitorDialog({
     const code = parseInt(newStatusCode);
     if (code >= 100 && code <= 599 && !statusCodes.includes(code)) {
       setStatusCodes([...statusCodes, code]);
-      setNewStatusCode('');
+      setNewStatusCode("");
     }
   };
 
   const removeStatusCode = (code: number) => {
     if (statusCodes.length > 1) {
-      setStatusCodes(statusCodes.filter(c => c !== code));
+      setStatusCodes(statusCodes.filter((c) => c !== code));
     }
   };
 
   const addHeader = () => {
     if (newHeaderKey && newHeaderValue) {
-      setCustomHeaders(prev => ({
+      setCustomHeaders((prev) => ({
         ...prev,
         [newHeaderKey]: newHeaderValue,
       }));
-      setNewHeaderKey('');
-      setNewHeaderValue('');
+      setNewHeaderKey("");
+      setNewHeaderValue("");
     }
   };
 
   const removeHeader = (key: string) => {
-    setCustomHeaders(prev => {
+    setCustomHeaders((prev) => {
       const newHeaders = { ...prev };
       delete newHeaders[key];
       return newHeaders;
     });
   };
 
-  const selectedMethod = form.watch('method');
+  const selectedMethod = form.watch("method");
   const showBodyField =
     selectedMethod !== undefined &&
-    ([HTTP_METHOD.POST, HTTP_METHOD.PUT, HTTP_METHOD.PATCH] as HttpMethod[]).includes(selectedMethod);
+    (
+      [HTTP_METHOD.POST, HTTP_METHOD.PUT, HTTP_METHOD.PATCH] as HttpMethod[]
+    ).includes(selectedMethod);
 
   if (!monitor) return null;
 
@@ -166,7 +179,10 @@ export function EditMonitorDialog({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-6"
+          >
             {/* Basic Information */}
             <div className="space-y-4">
               <FormField
@@ -193,10 +209,10 @@ export function EditMonitorDialog({
                   <FormItem>
                     <FormLabel>URL *</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="https://example.com" 
-                        type="url" 
-                        {...field} 
+                      <Input
+                        placeholder="https://example.com"
+                        type="url"
+                        {...field}
                       />
                     </FormControl>
                     <FormDescription>
@@ -241,8 +257,8 @@ export function EditMonitorDialog({
                   <Badge key={code} variant="secondary" className="gap-1">
                     {code}
                     {statusCodes.length > 1 && (
-                      <X 
-                        className="h-3 w-3 cursor-pointer" 
+                      <X
+                        className="h-3 w-3 cursor-pointer"
                         onClick={() => removeStatusCode(code)}
                       />
                     )}
@@ -278,12 +294,14 @@ export function EditMonitorDialog({
                     <FormLabel>Check Interval</FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <Input 
-                          type="number" 
-                          min="1" 
-                          max="60" 
+                        <Input
+                          type="number"
+                          min="1"
+                          max="60"
                           {...field}
-                          onChange={(e) => field.onChange(parseInt(e.target.value))}
+                          onChange={(e) =>
+                            field.onChange(parseInt(e.target.value))
+                          }
                         />
                         <span className="absolute right-3 top-2.5 text-sm text-muted-foreground">
                           min
@@ -303,12 +321,14 @@ export function EditMonitorDialog({
                     <FormLabel>Timeout</FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <Input 
-                          type="number" 
-                          min="5" 
-                          max="60" 
+                        <Input
+                          type="number"
+                          min="5"
+                          max="60"
                           {...field}
-                          onChange={(e) => field.onChange(parseInt(e.target.value))}
+                          onChange={(e) =>
+                            field.onChange(parseInt(e.target.value))
+                          }
                         />
                         <span className="absolute right-3 top-2.5 text-sm text-muted-foreground">
                           sec
@@ -327,12 +347,14 @@ export function EditMonitorDialog({
                   <FormItem>
                     <FormLabel>Retries</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="number" 
-                        min="0" 
-                        max="5" 
+                      <Input
+                        type="number"
+                        min="0"
+                        max="5"
                         {...field}
-                        onChange={(e) => field.onChange(parseInt(e.target.value))}
+                        onChange={(e) =>
+                          field.onChange(parseInt(e.target.value))
+                        }
                       />
                     </FormControl>
                     <FormMessage />
@@ -345,7 +367,10 @@ export function EditMonitorDialog({
             <div className="space-y-2">
               <FormLabel>Custom Headers</FormLabel>
               {Object.entries(customHeaders).map(([key, value]) => (
-                <div key={key} className="flex items-center gap-2 p-2 bg-muted rounded">
+                <div
+                  key={key}
+                  className="flex items-center gap-2 p-2 bg-muted rounded"
+                >
                   <span className="font-mono text-sm">{key}:</span>
                   <span className="font-mono text-sm flex-1">{value}</span>
                   <Button
@@ -384,10 +409,10 @@ export function EditMonitorDialog({
                   <FormItem>
                     <FormLabel>Request Body</FormLabel>
                     <FormControl>
-                      <Textarea 
+                      <Textarea
                         placeholder='{"key": "value"}'
                         className="font-mono"
-                        {...field} 
+                        {...field}
                       />
                     </FormControl>
                     <FormDescription>
@@ -431,7 +456,7 @@ export function EditMonitorDialog({
                 Cancel
               </Button>
               <Button type="submit" disabled={isLoading}>
-                {isLoading ? 'Updating...' : 'Update Monitor'}
+                {isLoading ? "Updating..." : "Update Monitor"}
               </Button>
             </DialogFooter>
           </form>

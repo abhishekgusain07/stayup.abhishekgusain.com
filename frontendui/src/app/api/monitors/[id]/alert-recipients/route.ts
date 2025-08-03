@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db/drizzle";
 import { monitors, alertRecipients, user } from "@/db/schema";
-import { 
-  CreateAlertRecipientSchema, 
-  createSuccessResponse, 
+import {
+  CreateAlertRecipientSchema,
+  createSuccessResponse,
   createErrorResponse,
-  getSubscriptionLimits 
+  getSubscriptionLimits,
 } from "@/types/shared";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
@@ -21,32 +21,25 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
     const session = await auth.api.getSession({
-      headers: await headers()
+      headers: await headers(),
     });
 
     if (!session) {
-      return NextResponse.json(
-        createErrorResponse("Authentication required"),
-        { status: 401 }
-      );
+      return NextResponse.json(createErrorResponse("Authentication required"), {
+        status: 401,
+      });
     }
 
     // Verify the monitor belongs to the user
     const monitor = await db
       .select()
       .from(monitors)
-      .where(
-        and(
-          eq(monitors.id, id),
-          eq(monitors.userId, session.user.id)
-        )
-      );
+      .where(and(eq(monitors.id, id), eq(monitors.userId, session.user.id)));
 
     if (monitor.length === 0) {
-      return NextResponse.json(
-        createErrorResponse("Monitor not found"),
-        { status: 404 }
-      );
+      return NextResponse.json(createErrorResponse("Monitor not found"), {
+        status: 404,
+      });
     }
 
     // Get alert recipients for this monitor
@@ -55,9 +48,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       .from(alertRecipients)
       .where(eq(alertRecipients.monitorId, id));
 
-    return NextResponse.json(
-      createSuccessResponse(recipients)
-    );
+    return NextResponse.json(createSuccessResponse(recipients));
   } catch (error) {
     console.error("Error fetching alert recipients:", error);
     return NextResponse.json(
@@ -72,32 +63,25 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
     const session = await auth.api.getSession({
-      headers: await headers()
+      headers: await headers(),
     });
 
     if (!session) {
-      return NextResponse.json(
-        createErrorResponse("Authentication required"),
-        { status: 401 }
-      );
+      return NextResponse.json(createErrorResponse("Authentication required"), {
+        status: 401,
+      });
     }
 
     // Verify the monitor belongs to the user
     const monitor = await db
       .select()
       .from(monitors)
-      .where(
-        and(
-          eq(monitors.id, id),
-          eq(monitors.userId, session.user.id)
-        )
-      );
+      .where(and(eq(monitors.id, id), eq(monitors.userId, session.user.id)));
 
     if (monitor.length === 0) {
-      return NextResponse.json(
-        createErrorResponse("Monitor not found"),
-        { status: 404 }
-      );
+      return NextResponse.json(createErrorResponse("Monitor not found"), {
+        status: 404,
+      });
     }
 
     const body = await request.json();
@@ -110,7 +94,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json(
         createErrorResponse(
           "Validation failed",
-          validationResult.error.issues.map(i => i.message).join(", ")
+          validationResult.error.issues.map((i) => i.message).join(", ")
         ),
         { status: 400 }
       );
@@ -120,9 +104,10 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     // Check subscription limits
     const userId = session.user.id;
-    const userSubscription = await db.select({subscription: user.subscription})
-    .from(user)
-    .where(eq(user.id, userId));
+    const userSubscription = await db
+      .select({ subscription: user.subscription })
+      .from(user)
+      .where(eq(user.id, userId));
     const subType = userSubscription[0].subscription;
     const limits = getSubscriptionLimits("BASIC");
 
