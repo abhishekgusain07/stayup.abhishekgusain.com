@@ -75,12 +75,6 @@ const TechnologyUsed = () => {
       src: "/posthog.svg",
       alt: "Posthog",
     },
-    {
-      name: "Sentry",
-      height: "h-8",
-      src: "/sentry.svg",
-      alt: "Sentry",
-    },
     {},
   ];
 

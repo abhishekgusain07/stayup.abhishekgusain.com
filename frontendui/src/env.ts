@@ -16,10 +16,6 @@ const serverEnvSchema = z.object({
   // Frontend URL
   FRONTEND_URL: z.string().url("FRONTEND_URL must be a valid URL"),
   
-  // Error monitoring (optional)
-  SENTRY_AUTH_TOKEN: z.string().optional(),
-  SENTRY_ORG: z.string().optional(),
-  SENTRY_PROJECT: z.string().optional(),
   
   // Email Service (optional)
   RESEND_API_KEY: z.string().optional(),
@@ -31,7 +27,6 @@ const clientEnvSchema = z.object({
   NEXT_PUBLIC_STRIPE_PRICE_ID: z.string().optional(),
   NEXT_PUBLIC_POSTHOG_KEY: z.string().optional(),
   NEXT_PUBLIC_POSTHOG_HOST: z.string().url().optional().or(z.literal("")),
-  NEXT_PUBLIC_SENTRY_DSN: z.string().optional(),
   NEXT_PUBLIC_WAITLIST_MODE: z
     .string()
     .transform((val) => val === "true")
@@ -66,7 +61,6 @@ const parseClientEnv = (): ClientEnv => {
     NEXT_PUBLIC_STRIPE_PRICE_ID: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID,
     NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
     NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
-    NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
     NEXT_PUBLIC_WAITLIST_MODE: process.env.NEXT_PUBLIC_WAITLIST_MODE || "false",
   };
 

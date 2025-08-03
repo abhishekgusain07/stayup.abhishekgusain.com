@@ -251,7 +251,7 @@ const SolutionSection = () => {
       icon: <BarChartIcon />,
       label: "Analytics Integration",
       value: "Ready",
-      comparison: "PostHog & Sentry pre-configured",
+      comparison: "PostHog analytics pre-configured",
     },
   ];
 

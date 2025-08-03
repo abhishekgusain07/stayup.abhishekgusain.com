@@ -59,14 +59,6 @@ const config = {
         process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://app.posthog.com",
     },
   },
-  monitoring: {
-    sentry: {
-      enabled: process.env.NEXT_PUBLIC_SENTRY_DSN ? true : false,
-      dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
-      tracesSampleRate: 1.0,
-      profilesSampleRate: 1.0,
-    },
-  },
 };
 ```
 
@@ -84,20 +76,3 @@ To disable PostHog:
 
 - Simply leave the `NEXT_PUBLIC_POSTHOG_KEY` empty in your `.env` file
 
-### Sentry Error Monitoring
-
-Sentry provides error tracking, performance monitoring, and more.
-
-To enable Sentry:
-
-1. Create a Sentry account and project at [Sentry.io](https://sentry.io)
-2. Add your DSN to the `.env` file: `NEXT_PUBLIC_SENTRY_DSN=https://your-dsn-url`
-3. For source map uploads, add: `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, and `SENTRY_PROJECT`
-
-To disable Sentry:
-
-- Simply leave the `NEXT_PUBLIC_SENTRY_DSN` empty in your `.env` file
-
-### Testing Error Monitoring
-
-To test Sentry integration, visit the `/sentry-example-page` route in your application, which includes buttons to trigger test errors.
