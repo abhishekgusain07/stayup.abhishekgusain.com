@@ -218,3 +218,13 @@ export const monitorLogs = pgTable("monitor_logs", {
   details: jsonb("details"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
+
+// ========================================
+// WAITLIST TABLE
+// ========================================
+
+export const waitlist = pgTable("waitlist", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  email: text("email").notNull().unique(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});

@@ -16,6 +16,7 @@ import { useUser } from "@/hooks/useUser";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { isWaitlistMode } from "@/utils/featureFlags";
 
 export function NavbarDemo({
   children,
@@ -87,6 +88,11 @@ export function NavbarDemo({
 
   // Render avatar skeleton during loading
   const renderAuthUI = () => {
+    // In waitlist mode, don't show any auth UI
+    if (isWaitlistMode()) {
+      return null;
+    }
+
     if (isLoading) {
       return (
         <div className="h-10 w-10 rounded-full bg-gray-200 animate-pulse flex items-center justify-center">
@@ -143,6 +149,11 @@ export function NavbarDemo({
 
   // Render auth UI for mobile menu
   const renderMobileAuthUI = () => {
+    // In waitlist mode, don't show any auth UI
+    if (isWaitlistMode()) {
+      return null;
+    }
+
     if (isLoading) {
       return (
         <div className="w-full h-10 bg-gray-200 rounded-md animate-pulse"></div>
@@ -231,16 +242,18 @@ export function NavbarDemo({
             ))}
             <div className="flex w-full flex-col gap-4">
               {renderMobileAuthUI()}
-              <NavbarButton
-                onClick={() => {
-                  router.push("/book-a-call");
-                  setIsMobileMenuOpen(false);
-                }}
-                variant="primary"
-                className="w-full"
-              >
-                Book a call
-              </NavbarButton>
+              {!isWaitlistMode() && (
+                <NavbarButton
+                  onClick={() => {
+                    router.push("/book-a-call");
+                    setIsMobileMenuOpen(false);
+                  }}
+                  variant="primary"
+                  className="w-full"
+                >
+                  Book a call
+                </NavbarButton>
+              )}
             </div>
           </MobileNavMenu>
         </MobileNav>

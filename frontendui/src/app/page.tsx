@@ -14,6 +14,8 @@ import type { LucideIcon } from "lucide-react";
 import { useFeedbackModal } from "@/hooks/useFeedbackModal";
 import { useUser } from "@/hooks/useUser";
 import { GlobalMonitoringMap } from "@/components/global-monitoring-map";
+import { isWaitlistMode } from "@/utils/featureFlags";
+import { WaitlistSignup } from "@/components/waitlist-signup";
 
 export default function Home() {
   const [showAnnouncement, setShowAnnouncement] = useState(true);
@@ -144,28 +146,42 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6, ease: "easeOut" }}
             >
-              Discover comprehensive, globally distributed monitoring solutions designed to elevate your website's reliability and user experience journey.
+              {isWaitlistMode()
+                ? "We're building the most reliable uptime monitoring platform. Join the waitlist to be among the first to experience next-generation website monitoring."
+                : "Discover comprehensive, globally distributed monitoring solutions designed to elevate your website's reliability and user experience journey."
+              }
             </motion.p>
 
-            <motion.div 
-              className="flex flex-col sm:flex-row gap-4 sm:gap-6 mb-12 md:mb-16 px-4 sm:px-0"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.8, ease: "easeOut" }}
-            >
-              <Link
-                href="/sign-up"
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 sm:px-10 py-4 sm:py-5 rounded-xl font-semibold text-base sm:text-lg shadow-xl shadow-blue-500/20 hover:shadow-2xl hover:shadow-blue-500/30 transition-all transform hover:-translate-y-0.5 text-center"
+            {isWaitlistMode() ? (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.8, ease: "easeOut" }}
+                className="mb-12 md:mb-16"
               >
-                Start Monitoring
-              </Link>
-              <Link
-                href="/dashboard"
-                className="border-2 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 px-8 sm:px-10 py-4 sm:py-5 rounded-xl font-semibold text-base sm:text-lg transition-all hover:bg-gray-50 dark:hover:bg-gray-800/50 text-center"
+                <WaitlistSignup className="px-4 sm:px-0" />
+              </motion.div>
+            ) : (
+              <motion.div 
+                className="flex flex-col sm:flex-row gap-4 sm:gap-6 mb-12 md:mb-16 px-4 sm:px-0"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.8, ease: "easeOut" }}
               >
-                Dashboard Portal
-              </Link>
-            </motion.div>
+                <Link
+                  href="/sign-up"
+                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 sm:px-10 py-4 sm:py-5 rounded-xl font-semibold text-base sm:text-lg shadow-xl shadow-blue-500/20 hover:shadow-2xl hover:shadow-blue-500/30 transition-all transform hover:-translate-y-0.5 text-center"
+                >
+                  Start Monitoring
+                </Link>
+                <Link
+                  href="/dashboard"
+                  className="border-2 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 px-8 sm:px-10 py-4 sm:py-5 rounded-xl font-semibold text-base sm:text-lg transition-all hover:bg-gray-50 dark:hover:bg-gray-800/50 text-center"
+                >
+                  Dashboard Portal
+                </Link>
+              </motion.div>
+            )}
 
           </div>
         </section>
@@ -310,48 +326,79 @@ export default function Home() {
         </section>
 
         {/* Pricing Section */}
-        <section className="py-16 px-4 md:px-8 lg:px-16">
-          <Pricing />
-        </section>
+        {!isWaitlistMode() && (
+          <section className="py-16 px-4 md:px-8 lg:px-16">
+            <Pricing />
+          </section>
+        )}
 
-        {/* CTA Section */}
+{/* CTA Section */}
         <section className="py-16 px-4 md:px-8 lg:px-16 bg-gradient-to-br from-green-50 to-blue-50 dark:from-green-950/20 dark:to-blue-950/20">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Never Miss Another Downtime
-            </h2>
-            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Join thousands of developers and businesses who trust StayUp to
-              monitor their websites 24/7. Start your free trial today.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/sign-up"
-                className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white px-8 py-4 rounded-lg font-medium text-lg shadow-lg shadow-green-500/20 hover:shadow-xl hover:shadow-green-500/30 transition-all transform hover:-translate-y-0.5 inline-block"
-              >
-                Start Free Trial
-              </Link>
-              <Link
-                href="#pricing"
-                className="border-2 border-muted-foreground/20 hover:border-muted-foreground/40 px-8 py-4 rounded-lg font-medium text-lg transition-all hover:bg-background/50 inline-block"
-              >
-                View Pricing
-              </Link>
-            </div>
-            <div className="mt-8 flex flex-wrap justify-center items-center gap-6 text-sm text-muted-foreground">
-              <span className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full" />
-                No setup fees
-              </span>
-              <span className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full" />
-                Cancel anytime
-              </span>
-              <span className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full" />
-                14-day free trial
-              </span>
-            </div>
+            {isWaitlistMode() ? (
+              <>
+                <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                  Ready to Revolutionize Your Monitoring?
+                </h2>
+                <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+                  Join our exclusive waitlist and be among the first to experience
+                  the future of website uptime monitoring.
+                </p>
+                <WaitlistSignup />
+                <div className="mt-8 flex flex-wrap justify-center items-center gap-6 text-sm text-muted-foreground">
+                  <span className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full" />
+                    Early access
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full" />
+                    Special pricing
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full" />
+                    Premium support
+                  </span>
+                </div>
+              </>
+            ) : (
+              <>
+                <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                  Never Miss Another Downtime
+                </h2>
+                <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+                  Join thousands of developers and businesses who trust StayUp to
+                  monitor their websites 24/7. Start your free trial today.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Link
+                    href="/sign-up"
+                    className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white px-8 py-4 rounded-lg font-medium text-lg shadow-lg shadow-green-500/20 hover:shadow-xl hover:shadow-green-500/30 transition-all transform hover:-translate-y-0.5 inline-block"
+                  >
+                    Start Free Trial
+                  </Link>
+                  <Link
+                    href="#pricing"
+                    className="border-2 border-muted-foreground/20 hover:border-muted-foreground/40 px-8 py-4 rounded-lg font-medium text-lg transition-all hover:bg-background/50 inline-block"
+                  >
+                    View Pricing
+                  </Link>
+                </div>
+                <div className="mt-8 flex flex-wrap justify-center items-center gap-6 text-sm text-muted-foreground">
+                  <span className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full" />
+                    No setup fees
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full" />
+                    Cancel anytime
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full" />
+                    14-day free trial
+                  </span>
+                </div>
+              </>
+            )}
           </div>
         </section>
         <Footer />

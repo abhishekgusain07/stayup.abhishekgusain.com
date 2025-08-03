@@ -62,7 +62,7 @@ class ApiClient {
       return response.json();
     } catch (error) {
       clearTimeout(timeoutId);
-      if (error.name === "AbortError") {
+      if (error instanceof Error && error.name === "AbortError") {
         throw new Error(
           "Request timeout - the server took too long to respond"
         );
