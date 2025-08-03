@@ -300,8 +300,8 @@ export function createSuccessResponse<T>(
 export function createErrorResponse(
   error: string,
   message?: string,
-): ApiResponse<never> {
-  return createApiResponse<never>(false, undefined as never, message, error);
+): ApiResponse<any> {
+  return createApiResponse(false, undefined!, message, error);
 }
 
 export function isMonitorUp(status: MonitorStatus): boolean {
