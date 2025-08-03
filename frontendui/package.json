@@ -9,7 +9,10 @@
     "lint": "next lint",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
-    "sync-types": "node ../scripts/sync-types.js"
+    "sync-types": "node ../scripts/sync-types.js",
+    "prepare": "husky",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
@@ -62,6 +65,8 @@
     "drizzle-kit": "^0.30.6",
     "eslint": "^9",
     "eslint-config-next": "15.2.5",
+    "husky": "^9.1.7",
+    "prettier": "^3.6.2",
     "tailwindcss": "^4.1.4",
     "typescript": "^5"
   }
