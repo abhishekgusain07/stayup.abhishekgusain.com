@@ -35,20 +35,35 @@ class ApiClient {
       ...(token && { 'Authorization': `Bearer ${token}` }),
     };
 
-    const response = await fetch(url, {
-      ...options,
-      credentials: 'include', // Include cookies for better-auth session
-      headers: {
-        ...defaultHeaders,
-        ...options.headers,
-      },
-    });
+    // Create abort controller for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
 
-    if (!response.ok) {
-      throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+    try {
+      const response = await fetch(url, {
+        ...options,
+        credentials: 'include', // Include cookies for better-auth session
+        headers: {
+          ...defaultHeaders,
+          ...options.headers,
+        },
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+      }
+
+      return response.json();
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error.name === 'AbortError') {
+        throw new Error('Request timeout - the server took too long to respond');
+      }
+      throw error;
     }
-
-    return response.json();
   }
 
   private getAuthToken(): string | null {

@@ -56,8 +56,13 @@ export function MonitorsList() {
   );
 
   const handleCreateMonitor = async (data: CreateMonitor) => {
-    await createMonitor(data);
-    setShowCreateDialog(false);
+    try {
+      await createMonitor(data);
+      setShowCreateDialog(false);
+    } catch (error) {
+      console.error('Failed to create monitor:', error);
+      // Dialog will remain open on error, allowing user to retry or cancel
+    }
   };
 
   const handleEditMonitor = (monitor: Monitor) => {

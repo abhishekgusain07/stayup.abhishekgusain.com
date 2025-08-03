@@ -33,7 +33,8 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { X } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { X, AlertCircle } from 'lucide-react';
 
 interface CreateMonitorDialogProps {
   open: boolean;
@@ -47,6 +48,7 @@ export function CreateMonitorDialog({
   onSubmit,
 }: CreateMonitorDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [statusCodes, setStatusCodes] = useState<number[]>([200]);
   const [newStatusCode, setNewStatusCode] = useState('');
   const [customHeaders, setCustomHeaders] = useState<Record<string, string>>({});
@@ -72,6 +74,7 @@ export function CreateMonitorDialog({
 
   const handleSubmit = async (data: CreateMonitor) => {
     setIsLoading(true);
+    setError(null); // Clear any previous errors
     try {
       const submitData = {
         ...data,
@@ -82,6 +85,22 @@ export function CreateMonitorDialog({
       handleClose();
     } catch (error) {
       console.error('Failed to create monitor:', error);
+      // Extract meaningful error message
+      let errorMessage = 'Failed to create monitor. Please try again.';
+      if (error instanceof Error) {
+        if (error.message.includes('timeout')) {
+          errorMessage = 'Request timed out. The server took too long to respond. Please check your connection and try again.';
+        } else if (error.message.includes('Network Error') || error.message.includes('Failed to fetch')) {
+          errorMessage = 'Network error. Please check your internet connection and try again.';
+        } else if (error.message.includes('limit reached')) {
+          errorMessage = error.message;
+        } else if (error.message.includes('Slug already exists')) {
+          errorMessage = error.message;
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -94,6 +113,8 @@ export function CreateMonitorDialog({
     setNewStatusCode('');
     setNewHeaderKey('');
     setNewHeaderValue('');
+    setError(null);
+    setIsLoading(false);
     onOpenChange(false);
   };
 
@@ -142,6 +163,13 @@ export function CreateMonitorDialog({
             Set up monitoring for a new website or API endpoint.
           </DialogDescription>
         </DialogHeader>
+
+        {error && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
@@ -423,12 +451,11 @@ export function CreateMonitorDialog({
                 type="button"
                 variant="outline"
                 onClick={handleClose}
-                disabled={isLoading}
               >
                 Cancel
               </Button>
               <Button type="submit" disabled={isLoading}>
-                {isLoading ? 'Creating...' : 'Create Monitor'}
+                {isLoading ? 'Creating Monitor...' : 'Create Monitor'}
               </Button>
             </DialogFooter>
           </form>
