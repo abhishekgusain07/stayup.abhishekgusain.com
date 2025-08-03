@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { motion } from "motion/react";
 import { NavbarDemo } from "@/components/navbar";
 import Pricing from "@/components/pricing";
 import Link from "next/link";
@@ -113,23 +114,43 @@ export default function Home() {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(34,197,94,0.1),transparent_50%)]" />
 
           <div className="relative flex flex-col items-center text-center max-w-5xl mx-auto">
-            <div className="inline-flex items-center gap-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-3 py-1 rounded-full text-sm font-medium mb-6">
+            <motion.div 
+              className="inline-flex items-center gap-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-3 py-1 rounded-full text-sm font-medium mb-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+            >
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
               99.9% Uptime Guaranteed
-            </div>
+            </motion.div>
 
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-green-600 via-blue-600 to-indigo-600 dark:from-green-400 dark:via-blue-400 dark:to-indigo-400 leading-tight">
+            <motion.h1 
+              className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-green-600 via-blue-600 to-indigo-600 dark:from-green-400 dark:via-blue-400 dark:to-indigo-400 leading-tight"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+            >
               Monitor Your Sites <br />
               <span className="inline-block mt-1 mb-2">From Every Region</span>
-            </h1>
+            </motion.h1>
 
-            <p className="text-xl text-muted-foreground max-w-2xl mb-8 leading-relaxed">
+            <motion.p 
+              className="text-xl text-muted-foreground max-w-2xl mb-8 leading-relaxed"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.6, ease: "easeOut" }}
+            >
               Get instant alerts when your website goes down. Monitor from
               multiple locations worldwide and keep your users happy with 24/7
               uptime tracking.
-            </p>
+            </motion.p>
 
-            <div className="flex flex-col sm:flex-row gap-4 mb-12">
+            <motion.div 
+              className="flex flex-col sm:flex-row gap-4 mb-12"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.8, ease: "easeOut" }}
+            >
               <Link
                 href="/sign-up"
                 className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white px-8 py-4 rounded-lg font-medium text-lg shadow-lg shadow-green-500/20 hover:shadow-xl hover:shadow-green-500/30 transition-all transform hover:-translate-y-0.5"
@@ -142,10 +163,15 @@ export default function Home() {
               >
                 See How It Works
               </Link>
-            </div>
+            </motion.div>
 
             {/* Status Dashboard Preview */}
-            <div className="w-full max-w-4xl bg-background/80 backdrop-blur-sm border border-border/50 rounded-xl shadow-2xl p-6">
+            <motion.div 
+              className="w-full max-w-4xl bg-background/80 backdrop-blur-sm border border-border/50 rounded-xl shadow-2xl p-6"
+              initial={{ opacity: 0, y: 30, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.8, delay: 1.0, ease: "easeOut" }}
+            >
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-3 h-3 bg-green-500 rounded-full" />
                 <span className="font-medium">Live Status Dashboard</span>
@@ -188,7 +214,7 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </section>
 
@@ -214,7 +240,6 @@ export default function Home() {
           </div>
         </section>
 
-        <SolutionSection />
         {/* Pricing Section */}
         <section className="py-16 px-4 md:px-8 lg:px-16">
           <Pricing />

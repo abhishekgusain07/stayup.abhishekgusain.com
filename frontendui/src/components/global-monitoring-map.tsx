@@ -12,23 +12,18 @@ export function GlobalMonitoringMap() {
             Global Monitoring Network
           </div>
 
-          <h2 className="font-bold text-3xl md:text-5xl dark:text-white text-black mb-4">
+          <motion.h2 
+            className="font-bold text-3xl md:text-5xl dark:text-white text-black mb-4"
+            initial={{ opacity: 0.8, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+          >
             Monitor From{" "}
             <span className="text-green-600 dark:text-green-400">
-              {"Every Corner".split("").map((word, idx) => (
-                <motion.span
-                  key={idx}
-                  className="inline-block"
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ duration: 0.5, delay: idx * 0.05 }}
-                >
-                  {word}
-                </motion.span>
-              ))}
+              Every Corner
             </span>{" "}
             of the World
-          </h2>
+          </motion.h2>
 
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             Our distributed monitoring network spans across 6 continents,
@@ -40,60 +35,40 @@ export function GlobalMonitoringMap() {
 
         {/* Monitoring Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-          <motion.div
-            className="text-center p-4 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg border border-green-200 dark:border-green-800/30"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
+          <div className="text-center p-4 bg-white/90 dark:bg-slate-800/90 rounded-lg border border-green-200 dark:border-green-800/30">
             <div className="text-2xl md:text-3xl font-bold text-green-600 dark:text-green-400">
               15+
             </div>
             <div className="text-sm text-muted-foreground">
               Global Locations
             </div>
-          </motion.div>
-          <motion.div
-            className="text-center p-4 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg border border-blue-200 dark:border-blue-800/30"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
+          </div>
+          <div className="text-center p-4 bg-white/90 dark:bg-slate-800/90 rounded-lg border border-blue-200 dark:border-blue-800/30">
             <div className="text-2xl md:text-3xl font-bold text-blue-600 dark:text-blue-400">
               30s
             </div>
             <div className="text-sm text-muted-foreground">Check Interval</div>
-          </motion.div>
-          <motion.div
-            className="text-center p-4 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg border border-purple-200 dark:border-purple-800/30"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-          >
+          </div>
+          <div className="text-center p-4 bg-white/90 dark:bg-slate-800/90 rounded-lg border border-purple-200 dark:border-purple-800/30">
             <div className="text-2xl md:text-3xl font-bold text-purple-600 dark:text-purple-400">
               99.9%
             </div>
             <div className="text-sm text-muted-foreground">Uptime SLA</div>
-          </motion.div>
-          <motion.div
-            className="text-center p-4 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg border border-orange-200 dark:border-orange-800/30"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-          >
+          </div>
+          <div className="text-center p-4 bg-white/90 dark:bg-slate-800/90 rounded-lg border border-orange-200 dark:border-orange-800/30">
             <div className="text-2xl md:text-3xl font-bold text-orange-600 dark:text-orange-400">
               &lt;1s
             </div>
             <div className="text-sm text-muted-foreground">Alert Speed</div>
-          </motion.div>
+          </div>
         </div>
 
         {/* World Map */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
+        <motion.div 
           className="relative"
+          initial={{ opacity: 0.8, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
         >
           <WorldMap
             dots={[
@@ -163,54 +138,61 @@ export function GlobalMonitoringMap() {
         </motion.div>
 
         {/* Benefits */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
           <motion.div
-            className="text-center p-6 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg border border-green-200 dark:border-green-800/30"
-            initial={{ opacity: 0, y: 20 }}
+            className="group relative rounded-2xl bg-white/90 dark:bg-slate-800/90 border border-green-200/50 dark:border-green-800/30 p-8 text-center shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+            initial={{ opacity: 0.8, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
           >
-            <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-              <div className="w-6 h-6 bg-green-500 rounded-full animate-pulse" />
+            <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                <div className="w-4 h-4 bg-green-500 rounded-full animate-pulse" />
+              </div>
             </div>
-            <h3 className="font-semibold text-lg mb-2">Real-Time Monitoring</h3>
-            <p className="text-muted-foreground text-sm">
+
+            <h3 className="font-bold text-xl mb-4 text-gray-900 dark:text-white">
+              Real-Time Monitoring
+            </h3>
+            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
               Continuous monitoring from multiple locations ensures we catch
               downtime instantly, no matter where your users are.
             </p>
           </motion.div>
 
           <motion.div
-            className="text-center p-6 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg border border-blue-200 dark:border-blue-800/30"
-            initial={{ opacity: 0, y: 20 }}
+            className="group relative rounded-2xl bg-white/90 dark:bg-slate-800/90 border border-blue-200/50 dark:border-blue-800/30 p-8 text-center shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+            initial={{ opacity: 0.8, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
           >
-            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-blue-600 dark:text-blue-400 text-xl">
-                🌐
-              </span>
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <span className="text-2xl">🌐</span>
             </div>
-            <h3 className="font-semibold text-lg mb-2">Global Perspective</h3>
-            <p className="text-muted-foreground text-sm">
+
+            <h3 className="font-bold text-xl mb-4 text-gray-900 dark:text-white">
+              Global Perspective
+            </h3>
+            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
               See how your website performs from different continents and
               identify regional performance issues.
             </p>
           </motion.div>
 
           <motion.div
-            className="text-center p-6 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg border border-purple-200 dark:border-purple-800/30"
-            initial={{ opacity: 0, y: 20 }}
+            className="group relative rounded-2xl bg-white/90 dark:bg-slate-800/90 border border-purple-200/50 dark:border-purple-800/30 p-8 text-center shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+            initial={{ opacity: 0.8, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.0 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
           >
-            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-purple-600 dark:text-purple-400 text-xl">
-                ⚡
-              </span>
+            <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <span className="text-2xl">⚡</span>
             </div>
-            <h3 className="font-semibold text-lg mb-2">Instant Alerts</h3>
-            <p className="text-muted-foreground text-sm">
+
+            <h3 className="font-bold text-xl mb-4 text-gray-900 dark:text-white">
+              Instant Alerts
+            </h3>
+            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
               Get notified within seconds when any monitoring location detects
               an issue with your website.
             </p>

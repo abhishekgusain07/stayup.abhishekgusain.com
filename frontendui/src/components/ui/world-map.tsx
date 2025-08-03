@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 import { motion } from "motion/react";
 import DottedMap from "dotted-map";
 import { monitoringDotsUSServer } from "../../../constants/mapdots";
@@ -18,14 +18,23 @@ export function WorldMap({
   lineColor = "#0ea5e9",
 }: MapProps) {
   const svgRef = useRef<SVGSVGElement>(null);
-  const map = new DottedMap({ height: 100, grid: "diagonal" });
+  
+  // Memoize the expensive DottedMap creation and SVG generation
+  const svgMap = useMemo(() => {
+    const map = new DottedMap({ height: 100, grid: "diagonal" });
+    return map.getSVG({
+      radius: 0.22,
+      color: "#00000040",
+      shape: "circle",
+      backgroundColor: "white",
+    });
+  }, []);
 
-  const svgMap = map.getSVG({
-    radius: 0.22,
-    color: "#00000040",
-    shape: "circle",
-    backgroundColor: "white",
-  });
+  // Memoize the data URL to prevent re-encoding on every render
+  const svgDataUrl = useMemo(
+    () => `data:image/svg+xml;utf8,${encodeURIComponent(svgMap)}`,
+    [svgMap]
+  );
 
   const projectPoint = (lat: number, lng: number) => {
     const x = (lng + 180) * (800 / 360);
@@ -43,14 +52,15 @@ export function WorldMap({
   };
 
   return (
-    <div className="w-full aspect-[2/1] dark:bg-black bg-white rounded-lg  relative font-sans">
+    <div className="w-full aspect-[2/1] dark:bg-black bg-white rounded-lg relative font-sans will-change-transform">
       <img
-        src={`data:image/svg+xml;utf8,${encodeURIComponent(svgMap)}`}
+        src={svgDataUrl}
         className="h-full w-full [mask-image:linear-gradient(to_bottom,transparent,white_10%,white_90%,transparent)] pointer-events-none select-none"
         alt="world map"
         height="495"
         width="1056"
         draggable={false}
+        loading="lazy"
       />
       <svg
         ref={svgRef}
@@ -108,24 +118,9 @@ export function WorldMap({
                 r="2"
                 fill={lineColor}
                 opacity="0.5"
-              >
-                <animate
-                  attributeName="r"
-                  from="2"
-                  to="8"
-                  dur="1.5s"
-                  begin="0s"
-                  repeatCount="indefinite"
-                />
-                <animate
-                  attributeName="opacity"
-                  from="0.5"
-                  to="0"
-                  dur="1.5s"
-                  begin="0s"
-                  repeatCount="indefinite"
-                />
-              </circle>
+                className="animate-ping"
+                style={{ animationDuration: '2s' }}
+              />
             </g>
             <g key={`end-${i}`}>
               <circle
@@ -140,24 +135,9 @@ export function WorldMap({
                 r="2"
                 fill={lineColor}
                 opacity="0.5"
-              >
-                <animate
-                  attributeName="r"
-                  from="2"
-                  to="8"
-                  dur="1.5s"
-                  begin="0s"
-                  repeatCount="indefinite"
-                />
-                <animate
-                  attributeName="opacity"
-                  from="0.5"
-                  to="0"
-                  dur="1.5s"
-                  begin="0s"
-                  repeatCount="indefinite"
-                />
-              </circle>
+                className="animate-ping"
+                style={{ animationDuration: '2s', animationDelay: `${i * 0.2}s` }}
+              />
             </g>
           </g>
         ))}
