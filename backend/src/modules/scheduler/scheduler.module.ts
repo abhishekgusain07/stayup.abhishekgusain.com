@@ -1,15 +1,15 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { BullModule } from '@nestjs/bull';
+import { Module } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
+import { BullModule } from "@nestjs/bull";
 
-import { SchedulerService } from './scheduler.service';
-import { MonitorProcessor } from './monitor.processor';
+import { SchedulerService } from "./scheduler.service";
+import { MonitorProcessor } from "./monitor.processor";
 
 @Module({
   imports: [
     ConfigModule,
     BullModule.registerQueue({
-      name: 'monitor-jobs',
+      name: "monitor-jobs",
     }),
   ],
   providers: [SchedulerService, MonitorProcessor],

@@ -1,10 +1,10 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import * as nodemailer from 'nodemailer';
-import { eq, and } from 'drizzle-orm';
+import { Injectable, Inject } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import * as nodemailer from "nodemailer";
+import { eq, and } from "drizzle-orm";
 
-import { DATABASE_CONNECTION } from '../../database/database.module';
-import { monitors, incidents, alertRecipients } from '../../database/schema';
+import { DATABASE_CONNECTION } from "../../database/database.module";
+import { monitors, incidents, alertRecipients } from "../../database/schema";
 
 @Injectable()
 export class NotificationService {
@@ -22,21 +22,23 @@ export class NotificationService {
    */
   private initializeTransporter(): void {
     const smtpConfig = {
-      host: this.configService.get('SMTP_HOST'),
-      port: parseInt(this.configService.get('SMTP_PORT')) || 587,
+      host: this.configService.get("SMTP_HOST"),
+      port: parseInt(this.configService.get("SMTP_PORT")) || 587,
       secure: false, // true for 465, false for other ports
       auth: {
-        user: this.configService.get('SMTP_USER'),
-        pass: this.configService.get('SMTP_PASS'),
+        user: this.configService.get("SMTP_USER"),
+        pass: this.configService.get("SMTP_PASS"),
       },
     };
 
     this.transporter = nodemailer.createTransport(smtpConfig);
 
-    console.log('Email transporter initialized:', {
+    console.log("Email transporter initialized:", {
       host: smtpConfig.host,
       port: smtpConfig.port,
-      user: smtpConfig.auth.user ? smtpConfig.auth.user.substring(0, 3) + '***' : 'not set',
+      user: smtpConfig.auth.user
+        ? smtpConfig.auth.user.substring(0, 3) + "***"
+        : "not set",
     });
   }
 
@@ -63,13 +65,15 @@ export class NotificationService {
       // Get alert recipients for this monitor
       const recipients = await this.getAlertRecipients(incident.monitorId);
       if (recipients.length === 0) {
-        console.log(`📭 No alert recipients configured for monitor: ${incident.monitorId}`);
+        console.log(
+          `📭 No alert recipients configured for monitor: ${incident.monitorId}`,
+        );
         return;
       }
 
       // Send email to each recipient
-      const emailPromises = recipients.map(recipient =>
-        this.sendDowntimeEmail(incident, recipient.email)
+      const emailPromises = recipients.map((recipient) =>
+        this.sendDowntimeEmail(incident, recipient.email),
       );
 
       await Promise.all(emailPromises);
@@ -77,10 +81,11 @@ export class NotificationService {
       // Update incident with notification timestamp
       await this.updateIncidentNotificationTime(incidentId);
 
-      console.log(`✅ Downtime alerts sent for incident ${incidentId} to ${recipients.length} recipients`);
-
+      console.log(
+        `✅ Downtime alerts sent for incident ${incidentId} to ${recipients.length} recipients`,
+      );
     } catch (error) {
-      console.error('Error sending downtime alert:', {
+      console.error("Error sending downtime alert:", {
         incidentId,
         error: error.message,
         stack: error.stack,
@@ -105,21 +110,24 @@ export class NotificationService {
       // Get alert recipients for this monitor
       const recipients = await this.getAlertRecipients(incident.monitorId);
       if (recipients.length === 0) {
-        console.log(`📭 No alert recipients configured for monitor: ${incident.monitorId}`);
+        console.log(
+          `📭 No alert recipients configured for monitor: ${incident.monitorId}`,
+        );
         return;
       }
 
       // Send recovery email to each recipient
-      const emailPromises = recipients.map(recipient =>
-        this.sendRecoveryEmail(incident, recipient.email)
+      const emailPromises = recipients.map((recipient) =>
+        this.sendRecoveryEmail(incident, recipient.email),
       );
 
       await Promise.all(emailPromises);
 
-      console.log(`✅ Recovery alerts sent for incident ${incidentId} to ${recipients.length} recipients`);
-
+      console.log(
+        `✅ Recovery alerts sent for incident ${incidentId} to ${recipients.length} recipients`,
+      );
     } catch (error) {
-      console.error('Error sending recovery alert:', {
+      console.error("Error sending recovery alert:", {
         incidentId,
         error: error.message,
       });
@@ -149,7 +157,7 @@ export class NotificationService {
         monitor: result[0].monitor,
       };
     } catch (error) {
-      console.error('Error getting incident with monitor:', error);
+      console.error("Error getting incident with monitor:", error);
       throw error;
     }
   }
@@ -164,7 +172,8 @@ export class NotificationService {
 
     const lastNotified = new Date(incident.lastNotifiedAt);
     const now = new Date();
-    const hoursSinceLastNotification = (now.getTime() - lastNotified.getTime()) / (1000 * 60 * 60);
+    const hoursSinceLastNotification =
+      (now.getTime() - lastNotified.getTime()) / (1000 * 60 * 60);
 
     return hoursSinceLastNotification < 1; // Throttle if less than 1 hour
   }
@@ -180,11 +189,11 @@ export class NotificationService {
         .where(
           and(
             eq(alertRecipients.monitorId, monitorId),
-            eq(alertRecipients.isActive, true)
-          )
+            eq(alertRecipients.isActive, true),
+          ),
         );
     } catch (error) {
-      console.error('Error getting alert recipients:', error);
+      console.error("Error getting alert recipients:", error);
       throw error;
     }
   }
@@ -192,15 +201,18 @@ export class NotificationService {
   /**
    * Send downtime email following uptimeMonitor's HTML/text format
    */
-  private async sendDowntimeEmail(incident: any, recipientEmail: string): Promise<void> {
+  private async sendDowntimeEmail(
+    incident: any,
+    recipientEmail: string,
+  ): Promise<void> {
     try {
       const subject = `🔴 ${incident.monitor.name} is DOWN`;
-      
+
       const htmlContent = this.generateDowntimeHtmlEmail(incident);
       const textContent = this.generateDowntimeTextEmail(incident);
 
       const mailOptions = {
-        from: this.configService.get('EMAIL_FROM') || 'noreply@stayup.dev',
+        from: this.configService.get("EMAIL_FROM") || "noreply@stayup.dev",
         to: recipientEmail,
         subject,
         html: htmlContent,
@@ -208,11 +220,13 @@ export class NotificationService {
       };
 
       await this.transporter.sendMail(mailOptions);
-      
-      console.log(`📧 Downtime email sent to: ${recipientEmail}`);
 
+      console.log(`📧 Downtime email sent to: ${recipientEmail}`);
     } catch (error) {
-      console.error(`Failed to send downtime email to ${recipientEmail}:`, error);
+      console.error(
+        `Failed to send downtime email to ${recipientEmail}:`,
+        error,
+      );
       throw error;
     }
   }
@@ -220,16 +234,25 @@ export class NotificationService {
   /**
    * Send recovery email following uptimeMonitor pattern
    */
-  private async sendRecoveryEmail(incident: any, recipientEmail: string): Promise<void> {
+  private async sendRecoveryEmail(
+    incident: any,
+    recipientEmail: string,
+  ): Promise<void> {
     try {
       const downtimeDuration = this.formatDuration(incident.duration);
       const subject = `🟢 ${incident.monitor.name} is RECOVERED`;
-      
-      const htmlContent = this.generateRecoveryHtmlEmail(incident, downtimeDuration);
-      const textContent = this.generateRecoveryTextEmail(incident, downtimeDuration);
+
+      const htmlContent = this.generateRecoveryHtmlEmail(
+        incident,
+        downtimeDuration,
+      );
+      const textContent = this.generateRecoveryTextEmail(
+        incident,
+        downtimeDuration,
+      );
 
       const mailOptions = {
-        from: this.configService.get('EMAIL_FROM') || 'noreply@stayup.dev',
+        from: this.configService.get("EMAIL_FROM") || "noreply@stayup.dev",
         to: recipientEmail,
         subject,
         html: htmlContent,
@@ -237,11 +260,13 @@ export class NotificationService {
       };
 
       await this.transporter.sendMail(mailOptions);
-      
-      console.log(`🟢 Recovery email sent to: ${recipientEmail}`);
 
+      console.log(`🟢 Recovery email sent to: ${recipientEmail}`);
     } catch (error) {
-      console.error(`Failed to send recovery email to ${recipientEmail}:`, error);
+      console.error(
+        `Failed to send recovery email to ${recipientEmail}:`,
+        error,
+      );
       throw error;
     }
   }
@@ -275,14 +300,18 @@ export class NotificationService {
             <strong>Monitor:</strong> ${incident.monitor.name}<br>
             <strong>URL:</strong> ${incident.monitor.url}<br>
             <strong>Incident Started:</strong> ${new Date(incident.startedAt).toLocaleString()}<br>
-            <strong>Error:</strong> ${incident.errorMessage || 'Connection failed'}
+            <strong>Error:</strong> ${incident.errorMessage || "Connection failed"}
         </div>
         
         <p>We'll continue monitoring and notify you when the service is restored.</p>
         
-        ${incident.monitor.slug ? `
+        ${
+          incident.monitor.slug
+            ? `
         <p>View public status: <a href="https://stayup.dev/status/${incident.monitor.slug}">https://stayup.dev/status/${incident.monitor.slug}</a></p>
-        ` : ''}
+        `
+            : ""
+        }
     </div>
     <div class="footer">
         <p>This alert was sent by StayUp Monitoring<br>
@@ -304,11 +333,11 @@ Your monitored service is currently down.
 Monitor: ${incident.monitor.name}
 URL: ${incident.monitor.url}
 Incident Started: ${new Date(incident.startedAt).toLocaleString()}
-Error: ${incident.errorMessage || 'Connection failed'}
+Error: ${incident.errorMessage || "Connection failed"}
 
 We'll continue monitoring and notify you when the service is restored.
 
-${incident.monitor.slug ? `View public status: https://stayup.dev/status/${incident.monitor.slug}` : ''}
+${incident.monitor.slug ? `View public status: https://stayup.dev/status/${incident.monitor.slug}` : ""}
 
 ---
 This alert was sent by StayUp Monitoring
@@ -319,7 +348,10 @@ You're receiving this because you're configured as an alert recipient for this m
   /**
    * Generate HTML email for recovery alert
    */
-  private generateRecoveryHtmlEmail(incident: any, downtimeDuration: string): string {
+  private generateRecoveryHtmlEmail(
+    incident: any,
+    downtimeDuration: string,
+  ): string {
     return `
 <!DOCTYPE html>
 <html>
@@ -350,9 +382,13 @@ You're receiving this because you're configured as an alert recipient for this m
         
         <p>The service is now responding normally.</p>
         
-        ${incident.monitor.slug ? `
+        ${
+          incident.monitor.slug
+            ? `
         <p>View public status: <a href="https://stayup.dev/status/${incident.monitor.slug}">https://stayup.dev/status/${incident.monitor.slug}</a></p>
-        ` : ''}
+        `
+            : ""
+        }
     </div>
     <div class="footer">
         <p>This recovery notification was sent by StayUp Monitoring</p>
@@ -364,7 +400,10 @@ You're receiving this because you're configured as an alert recipient for this m
   /**
    * Generate text email for recovery alert
    */
-  private generateRecoveryTextEmail(incident: any, downtimeDuration: string): string {
+  private generateRecoveryTextEmail(
+    incident: any,
+    downtimeDuration: string,
+  ): string {
     return `
 🟢 SERVICE RECOVERED
 
@@ -377,7 +416,7 @@ Recovered At: ${new Date(incident.resolvedAt).toLocaleString()}
 
 The service is now responding normally.
 
-${incident.monitor.slug ? `View public status: https://stayup.dev/status/${incident.monitor.slug}` : ''}
+${incident.monitor.slug ? `View public status: https://stayup.dev/status/${incident.monitor.slug}` : ""}
 
 ---
 This recovery notification was sent by StayUp Monitoring
@@ -387,7 +426,9 @@ This recovery notification was sent by StayUp Monitoring
   /**
    * Update incident notification timestamp
    */
-  private async updateIncidentNotificationTime(incidentId: string): Promise<void> {
+  private async updateIncidentNotificationTime(
+    incidentId: string,
+  ): Promise<void> {
     try {
       await this.db
         .update(incidents)
@@ -397,7 +438,7 @@ This recovery notification was sent by StayUp Monitoring
         })
         .where(eq(incidents.id, incidentId));
     } catch (error) {
-      console.error('Error updating incident notification time:', error);
+      console.error("Error updating incident notification time:", error);
       throw error;
     }
   }
@@ -406,7 +447,7 @@ This recovery notification was sent by StayUp Monitoring
    * Format duration in human-readable format
    */
   private formatDuration(seconds: number): string {
-    if (!seconds) return 'Unknown';
+    if (!seconds) return "Unknown";
 
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -417,7 +458,7 @@ This recovery notification was sent by StayUp Monitoring
     if (minutes > 0) parts.push(`${minutes}m`);
     if (remainingSeconds > 0) parts.push(`${remainingSeconds}s`);
 
-    return parts.join(' ') || '< 1s';
+    return parts.join(" ") || "< 1s";
   }
 
   /**
@@ -426,10 +467,10 @@ This recovery notification was sent by StayUp Monitoring
   async testEmailConfiguration(): Promise<boolean> {
     try {
       await this.transporter.verify();
-      console.log('✅ Email transporter is ready');
+      console.log("✅ Email transporter is ready");
       return true;
     } catch (error) {
-      console.error('❌ Email transporter test failed:', error.message);
+      console.error("❌ Email transporter test failed:", error.message);
       return false;
     }
   }
@@ -440,9 +481,9 @@ This recovery notification was sent by StayUp Monitoring
   async sendTestEmail(recipientEmail: string): Promise<void> {
     try {
       const mailOptions = {
-        from: this.configService.get('EMAIL_FROM') || 'noreply@stayup.dev',
+        from: this.configService.get("EMAIL_FROM") || "noreply@stayup.dev",
         to: recipientEmail,
-        subject: '🧪 StayUp Test Email',
+        subject: "🧪 StayUp Test Email",
         html: `
           <h2>Test Email from StayUp Monitoring</h2>
           <p>This is a test email to verify your email configuration.</p>

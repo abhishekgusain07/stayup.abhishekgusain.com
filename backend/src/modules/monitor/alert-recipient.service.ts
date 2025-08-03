@@ -1,27 +1,31 @@
-import { Injectable, Inject, BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
-import { eq, and } from 'drizzle-orm';
-import { nanoid } from 'nanoid';
+import {
+  Injectable,
+  Inject,
+  BadRequestException,
+  ForbiddenException,
+  NotFoundException,
+} from "@nestjs/common";
+import { eq, and } from "drizzle-orm";
+import { nanoid } from "nanoid";
 
-import { DATABASE_CONNECTION } from '../../database/database.module';
-import { monitors, alertRecipients } from '../../database/schema';
-import { 
-  CreateAlertRecipientSchema, 
+import { DATABASE_CONNECTION } from "../../database/database.module";
+import { monitors, alertRecipients } from "../../database/schema";
+import {
+  CreateAlertRecipientSchema,
   getSubscriptionLimits,
   type CreateAlertRecipient,
-  type AlertRecipient
-} from '../../types/shared';
+  type AlertRecipient,
+} from "../../types/shared";
 
 @Injectable()
 export class AlertRecipientService {
-  constructor(
-    @Inject(DATABASE_CONNECTION) private db: any,
-  ) {}
+  constructor(@Inject(DATABASE_CONNECTION) private db: any) {}
 
   async createAlertRecipient(
     monitorId: string,
     userId: string,
     data: CreateAlertRecipient,
-    userSubscription: string
+    userSubscription: string,
   ): Promise<AlertRecipient> {
     // Validate input
     const validatedData = CreateAlertRecipientSchema.parse(data);
@@ -30,34 +34,28 @@ export class AlertRecipientService {
     const monitor = await this.db
       .select()
       .from(monitors)
-      .where(
-        and(
-          eq(monitors.id, monitorId),
-          eq(monitors.userId, userId),
-          
-        )
-      );
+      .where(and(eq(monitors.id, monitorId), eq(monitors.userId, userId)));
 
     if (monitor.length === 0) {
-      throw new NotFoundException('Monitor not found');
+      throw new NotFoundException("Monitor not found");
     }
 
     // Check subscription limits following uptimeMonitor pattern
     const limits = getSubscriptionLimits(userSubscription);
-    
+
     const currentRecipients = await this.db
       .select()
       .from(alertRecipients)
       .where(
         and(
           eq(alertRecipients.monitorId, monitorId),
-          eq(alertRecipients.isActive, true)
-        )
+          eq(alertRecipients.isActive, true),
+        ),
       );
 
-    if ( currentRecipients.length >= limits.alertRecipients) {
+    if (currentRecipients.length >= limits.alertRecipients) {
       throw new ForbiddenException(
-        `Alert recipient limit reached. Your ${userSubscription} plan allows ${limits.alertRecipients} alert recipients per monitor. Upgrade to add more.`
+        `Alert recipient limit reached. Your ${userSubscription} plan allows ${limits.alertRecipients} alert recipients per monitor. Upgrade to add more.`,
       );
     }
 
@@ -68,12 +66,14 @@ export class AlertRecipientService {
       .where(
         and(
           eq(alertRecipients.monitorId, monitorId),
-          eq(alertRecipients.email, validatedData.email)
-        )
+          eq(alertRecipients.email, validatedData.email),
+        ),
       );
 
     if (existingRecipient.length > 0) {
-      throw new BadRequestException('This email is already configured for alerts on this monitor');
+      throw new BadRequestException(
+        "This email is already configured for alerts on this monitor",
+      );
     }
 
     // Create alert recipient
@@ -92,21 +92,18 @@ export class AlertRecipientService {
     return newRecipient[0];
   }
 
-  async getAlertRecipients(monitorId: string, userId: string): Promise<AlertRecipient[]> {
+  async getAlertRecipients(
+    monitorId: string,
+    userId: string,
+  ): Promise<AlertRecipient[]> {
     // Verify monitor ownership
     const monitor = await this.db
       .select()
       .from(monitors)
-      .where(
-        and(
-          eq(monitors.id, monitorId),
-          eq(monitors.userId, userId),
-          
-        )
-      );
+      .where(and(eq(monitors.id, monitorId), eq(monitors.userId, userId)));
 
     if (monitor.length === 0) {
-      throw new NotFoundException('Monitor not found');
+      throw new NotFoundException("Monitor not found");
     }
 
     // Get alert recipients
@@ -119,22 +116,16 @@ export class AlertRecipientService {
   async deleteAlertRecipient(
     recipientId: string,
     monitorId: string,
-    userId: string
+    userId: string,
   ): Promise<void> {
     // Verify monitor ownership
     const monitor = await this.db
       .select()
       .from(monitors)
-      .where(
-        and(
-          eq(monitors.id, monitorId),
-          eq(monitors.userId, userId),
-          
-        )
-      );
+      .where(and(eq(monitors.id, monitorId), eq(monitors.userId, userId)));
 
     if (monitor.length === 0) {
-      throw new NotFoundException('Monitor not found');
+      throw new NotFoundException("Monitor not found");
     }
 
     // Verify alert recipient exists
@@ -144,12 +135,12 @@ export class AlertRecipientService {
       .where(
         and(
           eq(alertRecipients.id, recipientId),
-          eq(alertRecipients.monitorId, monitorId)
-        )
+          eq(alertRecipients.monitorId, monitorId),
+        ),
       );
 
     if (recipient.length === 0) {
-      throw new NotFoundException('Alert recipient not found');
+      throw new NotFoundException("Alert recipient not found");
     }
 
     // Delete alert recipient
@@ -161,21 +152,16 @@ export class AlertRecipientService {
   async toggleAlertRecipient(
     recipientId: string,
     monitorId: string,
-    userId: string
+    userId: string,
   ): Promise<AlertRecipient> {
     // Verify monitor ownership
     const monitor = await this.db
       .select()
       .from(monitors)
-      .where(
-        and(
-          eq(monitors.id, monitorId),
-          eq(monitors.userId, userId),
-        )
-      );
+      .where(and(eq(monitors.id, monitorId), eq(monitors.userId, userId)));
 
     if (monitor.length === 0) {
-      throw new NotFoundException('Monitor not found');
+      throw new NotFoundException("Monitor not found");
     }
 
     // Verify alert recipient exists
@@ -185,12 +171,12 @@ export class AlertRecipientService {
       .where(
         and(
           eq(alertRecipients.id, recipientId),
-          eq(alertRecipients.monitorId, monitorId)
-        )
+          eq(alertRecipients.monitorId, monitorId),
+        ),
       );
 
     if (recipient.length === 0) {
-      throw new NotFoundException('Alert recipient not found');
+      throw new NotFoundException("Alert recipient not found");
     }
 
     // Toggle status

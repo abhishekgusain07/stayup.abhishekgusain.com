@@ -1,10 +1,10 @@
-import { Module, Global } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { drizzle } from 'drizzle-orm/neon-http';
-import { neon } from '@neondatabase/serverless';
-import * as schema from './schema';
+import { Module, Global } from "@nestjs/common";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { drizzle } from "drizzle-orm/neon-http";
+import { neon } from "@neondatabase/serverless";
+import * as schema from "./schema";
 
-export const DATABASE_CONNECTION = 'DATABASE_CONNECTION';
+export const DATABASE_CONNECTION = "DATABASE_CONNECTION";
 
 @Global()
 @Module({
@@ -13,9 +13,9 @@ export const DATABASE_CONNECTION = 'DATABASE_CONNECTION';
     {
       provide: DATABASE_CONNECTION,
       useFactory: async (configService: ConfigService) => {
-        const connectionString = configService.get<string>('DATABASE_URL');
+        const connectionString = configService.get<string>("DATABASE_URL");
         if (!connectionString) {
-          throw new Error('DATABASE_URL environment variable is not set');
+          throw new Error("DATABASE_URL environment variable is not set");
         }
 
         const sql = neon(connectionString);

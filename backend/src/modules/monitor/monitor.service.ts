@@ -1,47 +1,55 @@
-import { Injectable, Inject, BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
-import { InjectQueue } from '@nestjs/bull';
-import { Queue } from 'bull';
-import { eq, and, desc, count } from 'drizzle-orm';
-import { nanoid } from 'nanoid';
+import {
+  Injectable,
+  Inject,
+  BadRequestException,
+  ForbiddenException,
+  NotFoundException,
+} from "@nestjs/common";
+import { InjectQueue } from "@nestjs/bull";
+import { Queue } from "bull";
+import { eq, and, desc, count } from "drizzle-orm";
+import { nanoid } from "nanoid";
 
-import { DATABASE_CONNECTION } from '../../database/database.module';
-import { monitors, monitorLogs } from '../../database/schema';
-import { 
-  CreateMonitorSchema, 
-  UpdateMonitorSchema, 
+import { DATABASE_CONNECTION } from "../../database/database.module";
+import { monitors, monitorLogs } from "../../database/schema";
+import {
+  CreateMonitorSchema,
+  UpdateMonitorSchema,
   getSubscriptionLimits,
   type CreateMonitor,
   type UpdateMonitor,
-  type Monitor
-} from '../../types/shared';
+  type Monitor,
+} from "../../types/shared";
 
 @Injectable()
 export class MonitorService {
   constructor(
     @Inject(DATABASE_CONNECTION) private db: any,
-    @InjectQueue('monitor-jobs') private monitorQueue: Queue,
+    @InjectQueue("monitor-jobs") private monitorQueue: Queue,
   ) {}
 
-  async createMonitor(userId: string, data: CreateMonitor, userSubscription: string): Promise<Monitor> {
+  async createMonitor(
+    userId: string,
+    data: CreateMonitor,
+    userSubscription: string,
+  ): Promise<Monitor> {
     // Validate input using Zod schema
     const validatedData = CreateMonitorSchema.parse(data);
 
     // Check subscription limits following uptimeMonitor pattern
     const limits = getSubscriptionLimits(userSubscription);
-    
+
     const [currentMonitorCount] = await this.db
       .select({ count: count() })
       .from(monitors)
-      .where(
-        and(
-          eq(monitors.userId, userId),
-          eq(monitors.isActive, true),
-        )
-      );
+      .where(and(eq(monitors.userId, userId), eq(monitors.isActive, true)));
 
-    if (limits.monitors !== -1 && currentMonitorCount.count >= limits.monitors) {
+    if (
+      limits.monitors !== -1 &&
+      currentMonitorCount.count >= limits.monitors
+    ) {
       throw new ForbiddenException(
-        `Monitor limit reached. Your ${userSubscription} plan allows ${limits.monitors} monitors. Upgrade to add more.`
+        `Monitor limit reached. Your ${userSubscription} plan allows ${limits.monitors} monitors. Upgrade to add more.`,
       );
     }
 
@@ -66,7 +74,9 @@ export class MonitorService {
         .where(eq(monitors.slug, slug));
 
       if (existingSlugs.length > 0) {
-        throw new BadRequestException('Slug already exists. Please choose a different slug for your status page');
+        throw new BadRequestException(
+          "Slug already exists. Please choose a different slug for your status page",
+        );
       }
     }
 
@@ -88,21 +98,24 @@ export class MonitorService {
         body: validatedData.body || null,
         slug,
         isActive: validatedData.isActive,
-        currentStatus: 'PENDING',
+        currentStatus: "PENDING",
         createdAt: new Date(),
         updatedAt: new Date(),
       })
       .returning();
 
     // Log monitor creation following uptimeMonitor pattern
-    await this.logMonitorAction(monitorId, 'created', {
+    await this.logMonitorAction(monitorId, "created", {
       monitorName: validatedData.name,
       url: validatedData.url,
       method: validatedData.method,
     });
 
-    // Schedule initial monitoring job
-    await this.scheduleMonitorJob(newMonitor[0]);
+    // Schedule initial monitoring job (non-blocking to prevent hanging)
+    this.scheduleMonitorJob(newMonitor[0]).catch((error) => {
+      console.error(`Failed to schedule job for monitor ${monitorId}:`, error);
+      // Monitor creation should still succeed even if job scheduling fails
+    });
 
     return newMonitor[0];
   }
@@ -110,7 +123,7 @@ export class MonitorService {
   async getMonitorsByUser(
     userId: string,
     page: number = 1,
-    limit: number = 10
+    limit: number = 10,
   ): Promise<{ items: Monitor[]; pagination: any }> {
     const offset = (page - 1) * limit;
 
@@ -118,11 +131,7 @@ export class MonitorService {
     const userMonitors = await this.db
       .select()
       .from(monitors)
-      .where(
-        and(
-          eq(monitors.userId, userId),
-        )
-      )
+      .where(and(eq(monitors.userId, userId)))
       .orderBy(desc(monitors.createdAt))
       .limit(limit)
       .offset(offset);
@@ -131,11 +140,7 @@ export class MonitorService {
     const [totalCount] = await this.db
       .select({ count: count() })
       .from(monitors)
-      .where(
-        and(
-          eq(monitors.userId, userId),
-        )
-      );
+      .where(and(eq(monitors.userId, userId)));
 
     const total = totalCount.count;
     const totalPages = Math.ceil(total / limit);
@@ -155,15 +160,10 @@ export class MonitorService {
     const monitor = await this.db
       .select()
       .from(monitors)
-      .where(
-        and(
-          eq(monitors.id, monitorId),
-          eq(monitors.userId, userId),
-        )
-      );
+      .where(and(eq(monitors.id, monitorId), eq(monitors.userId, userId)));
 
     if (monitor.length === 0) {
-      throw new NotFoundException('Monitor not found');
+      throw new NotFoundException("Monitor not found");
     }
 
     return monitor[0];
@@ -172,7 +172,7 @@ export class MonitorService {
   async updateMonitor(
     monitorId: string,
     userId: string,
-    data: UpdateMonitor
+    data: UpdateMonitor,
   ): Promise<Monitor> {
     // Validate input
     const validatedData = UpdateMonitorSchema.parse(data);
@@ -188,9 +188,9 @@ export class MonitorService {
     // Only update provided fields following uptimeMonitor pattern
     Object.entries(validatedData).forEach(([key, value]) => {
       if (value !== undefined) {
-        if (key === 'headers' && value) {
+        if (key === "headers" && value) {
           updateFields[key] = value;
-        } else if (key === 'expectedStatusCodes') {
+        } else if (key === "expectedStatusCodes") {
           updateFields[key] = value;
         } else {
           updateFields[key] = value;
@@ -205,13 +205,18 @@ export class MonitorService {
       .returning();
 
     // Log monitor update
-    await this.logMonitorAction(monitorId, 'updated', {
+    await this.logMonitorAction(monitorId, "updated", {
       updatedFields: Object.keys(validatedData),
     });
 
-    // Reschedule monitoring job if settings changed
+    // Reschedule monitoring job if settings changed (non-blocking)
     if (validatedData.interval || validatedData.isActive !== undefined) {
-      await this.scheduleMonitorJob(updatedMonitor[0]);
+      this.scheduleMonitorJob(updatedMonitor[0]).catch((error) => {
+        console.error(
+          `Failed to reschedule job for monitor ${monitorId}:`,
+          error,
+        );
+      });
     }
 
     return updatedMonitor[0];
@@ -232,13 +237,16 @@ export class MonitorService {
       .where(eq(monitors.id, monitorId));
 
     // Log monitor deletion
-    await this.logMonitorAction(monitorId, 'deleted', {});
+    await this.logMonitorAction(monitorId, "deleted", {});
 
     // Cancel scheduled jobs
     await this.cancelMonitorJob(monitorId);
   }
 
-  async toggleMonitorStatus(monitorId: string, userId: string): Promise<Monitor> {
+  async toggleMonitorStatus(
+    monitorId: string,
+    userId: string,
+  ): Promise<Monitor> {
     const monitor = await this.getMonitorById(monitorId, userId);
     const newStatus = !monitor.isActive;
 
@@ -252,30 +260,48 @@ export class MonitorService {
       .returning();
 
     // Log status change
-    await this.logMonitorAction(monitorId, 'status_changed', {
+    await this.logMonitorAction(monitorId, "status_changed", {
       newStatus,
       oldStatus: monitor.isActive,
     });
 
-    // Update job scheduling
-    await this.scheduleMonitorJob(updatedMonitor[0]);
+    // Update job scheduling (non-blocking)
+    this.scheduleMonitorJob(updatedMonitor[0]).catch((error) => {
+      console.error(
+        `Failed to update job scheduling for monitor ${monitorId}:`,
+        error,
+      );
+    });
 
     return updatedMonitor[0];
   }
 
-  private async logMonitorAction(monitorId: string, action: string, details: any): Promise<void> {
+  private async logMonitorAction(
+    monitorId: string,
+    action: string,
+    details: any,
+  ): Promise<void> {
     try {
-      await this.db
-        .insert(monitorLogs)
-        .values({
-          id: nanoid(),
-          monitorId,
-          action,
-          details,
-          createdAt: new Date(),
-        });
+      await this.db.insert(monitorLogs).values({
+        id: nanoid(),
+        monitorId,
+        action,
+        details,
+        createdAt: new Date(),
+      });
     } catch (error) {
-      console.error('Error logging monitor action:', error);
+      console.error("Error logging monitor action:", error);
+    }
+  }
+
+  private async checkRedisHealth(): Promise<boolean> {
+    try {
+      // Test Redis connection by checking queue client
+      const queueHealth = await this.monitorQueue.client.ping();
+      return queueHealth === "PONG";
+    } catch (error) {
+      console.error("Redis health check failed:", error);
+      return false;
     }
   }
 
@@ -284,6 +310,14 @@ export class MonitorService {
       if (!monitor.isActive) {
         await this.cancelMonitorJob(monitor.id);
         return;
+      }
+
+      // Check Redis health before attempting to schedule
+      const redisHealthy = await this.checkRedisHealth();
+      if (!redisHealthy) {
+        throw new Error(
+          "Redis connection is not healthy - cannot schedule jobs",
+        );
       }
 
       // Schedule job using Bull (similar to uptimeMonitor's SQS pattern)
@@ -298,30 +332,35 @@ export class MonitorService {
         body: monitor.body,
       };
 
-      // Repeat job based on interval
-      await this.monitorQueue.add(
-        'check-monitor',
-        jobData,
-        {
-          repeat: {
-            every: monitor.interval * 60 * 1000, // Convert minutes to milliseconds
-          },
-          jobId: `monitor-${monitor.id}`, // Unique job ID for deduplication
-        }
-      );
+      // Add timeout to Bull queue operation to prevent hanging
+      const schedulePromise = this.monitorQueue.add("check-monitor", jobData, {
+        repeat: {
+          every: monitor.interval * 60 * 1000, // Convert minutes to milliseconds
+        },
+        jobId: `monitor-${monitor.id}`, // Unique job ID for deduplication
+      });
+
+      // Race the schedule operation with a timeout
+      await Promise.race([
+        schedulePromise,
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Job scheduling timeout")), 10000),
+        ),
+      ]);
     } catch (error) {
-      console.error('Error scheduling monitor job:', error);
+      console.error("Error scheduling monitor job:", error);
+      throw error; // Re-throw to be caught by caller's .catch()
     }
   }
 
   private async cancelMonitorJob(monitorId: string): Promise<void> {
     try {
-      await this.monitorQueue.removeRepeatable('check-monitor', {
+      await this.monitorQueue.removeRepeatable("check-monitor", {
         every: 60000,
         jobId: `monitor-${monitorId}`,
       });
     } catch (error) {
-      console.error('Error canceling monitor job:', error);
+      console.error("Error canceling monitor job:", error);
     }
   }
 }

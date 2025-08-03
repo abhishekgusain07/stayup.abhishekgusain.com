@@ -1,19 +1,29 @@
-import { Injectable, Inject, UnauthorizedException, BadRequestException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { eq, and } from 'drizzle-orm';
-import { nanoid } from 'nanoid';
+import {
+  Injectable,
+  Inject,
+  UnauthorizedException,
+  BadRequestException,
+} from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { eq, and } from "drizzle-orm";
+import { nanoid } from "nanoid";
 
-import { DATABASE_CONNECTION } from '../../database/database.module';
-import { monitors, monitorResults, incidents, monitorLogs } from '../../database/schema';
-import { NotificationService } from '../notification/notification.service';
-import { 
+import { DATABASE_CONNECTION } from "../../database/database.module";
+import {
+  monitors,
+  monitorResults,
+  incidents,
+  monitorLogs,
+} from "../../database/schema";
+import { NotificationService } from "../notification/notification.service";
+import {
   WebhookMonitorResultSchema,
   MonitorJobResultSchema,
   MONITOR_STATUS,
   INCIDENT_STATUS,
   type WebhookMonitorResult,
-  type MonitorJobResult
-} from '../../types/shared';
+  type MonitorJobResult,
+} from "../../types/shared";
 
 @Injectable()
 export class WebhookService {
@@ -24,9 +34,10 @@ export class WebhookService {
     private configService: ConfigService,
     private notificationService: NotificationService,
   ) {
-    this.internalApiSecret = this.configService.get<string>('INTERNAL_API_SECRET') || '';
+    this.internalApiSecret =
+      this.configService.get<string>("INTERNAL_API_SECRET") || "";
     if (!this.internalApiSecret) {
-      throw new Error('INTERNAL_API_SECRET environment variable is required');
+      throw new Error("INTERNAL_API_SECRET environment variable is required");
     }
   }
 
@@ -35,21 +46,24 @@ export class WebhookService {
    */
   verifyApiSecret(providedSecret: string): void {
     if (!providedSecret || providedSecret !== this.internalApiSecret) {
-      throw new UnauthorizedException('Invalid or missing API secret');
+      throw new UnauthorizedException("Invalid or missing API secret");
     }
   }
 
   /**
    * Process monitoring results from Lambda workers following uptimeMonitor pattern
    */
-  async processMonitorResults(webhookData: any, apiSecret: string): Promise<void> {
+  async processMonitorResults(
+    webhookData: any,
+    apiSecret: string,
+  ): Promise<void> {
     // Verify API secret
     this.verifyApiSecret(apiSecret);
 
     // Validate webhook payload
     const validatedData = WebhookMonitorResultSchema.parse(webhookData);
 
-    console.log('Processing monitoring results from Lambda:', {
+    console.log("Processing monitoring results from Lambda:", {
       region: validatedData.region,
       resultCount: validatedData.results.length,
       lambdaRequestId: validatedData.lambdaRequestId,
@@ -63,13 +77,13 @@ export class WebhookService {
       try {
         // Validate individual result
         const validatedResult = MonitorJobResultSchema.parse(result);
-        
+
         // Store monitoring result
         await this.storeMonitorResult(validatedResult);
-        
+
         // Update monitor status
         await this.updateMonitorStatus(validatedResult);
-        
+
         // Handle incident management
         const incident = await this.handleIncidentManagement(validatedResult);
         if (incident) {
@@ -80,16 +94,15 @@ export class WebhookService {
         await this.logMonitorCheck(validatedResult);
 
         processedResults.push(validatedResult);
-        
-        console.log('Processed monitoring result:', {
+
+        console.log("Processed monitoring result:", {
           monitorId: validatedResult.monitorId,
           status: validatedResult.status,
           responseTime: validatedResult.responseTime,
           region: validatedResult.region,
         });
-
       } catch (error) {
-        console.error('Error processing individual monitoring result:', {
+        console.error("Error processing individual monitoring result:", {
           monitorId: result.monitorId,
           error: error.message,
           result,
@@ -97,7 +110,7 @@ export class WebhookService {
       }
     }
 
-    console.log('Webhook processing completed:', {
+    console.log("Webhook processing completed:", {
       totalResults: validatedData.results.length,
       processedResults: processedResults.length,
       incidentsCreated: incidents.length,
@@ -110,21 +123,19 @@ export class WebhookService {
    */
   private async storeMonitorResult(result: MonitorJobResult): Promise<void> {
     try {
-      await this.db
-        .insert(monitorResults)
-        .values({
-          id: nanoid(),
-          monitorId: result.monitorId,
-          region: result.region,
-          status: result.status,
-          responseTime: result.responseTime,
-          statusCode: result.statusCode,
-          errorMessage: result.errorMessage,
-          checkedAt: new Date(result.checkedAt),
-          createdAt: new Date(),
-        });
+      await this.db.insert(monitorResults).values({
+        id: nanoid(),
+        monitorId: result.monitorId,
+        region: result.region,
+        status: result.status,
+        responseTime: result.responseTime,
+        statusCode: result.statusCode,
+        errorMessage: result.errorMessage,
+        checkedAt: new Date(result.checkedAt),
+        createdAt: new Date(),
+      });
     } catch (error) {
-      console.error('Error storing monitor result:', {
+      console.error("Error storing monitor result:", {
         monitorId: result.monitorId,
         error: error.message,
       });
@@ -154,9 +165,8 @@ export class WebhookService {
         .update(monitors)
         .set(updateData)
         .where(eq(monitors.id, result.monitorId));
-
     } catch (error) {
-      console.error('Error updating monitor status:', {
+      console.error("Error updating monitor status:", {
         monitorId: result.monitorId,
         error: error.message,
       });
@@ -167,7 +177,9 @@ export class WebhookService {
   /**
    * Handle incident creation and resolution following uptimeMonitor pattern
    */
-  private async handleIncidentManagement(result: MonitorJobResult): Promise<any> {
+  private async handleIncidentManagement(
+    result: MonitorJobResult,
+  ): Promise<any> {
     try {
       // Check for existing open incident
       const existingIncidents = await this.db
@@ -176,15 +188,15 @@ export class WebhookService {
         .where(
           and(
             eq(incidents.monitorId, result.monitorId),
-            eq(incidents.status, INCIDENT_STATUS.OPEN)
-          )
+            eq(incidents.status, INCIDENT_STATUS.OPEN),
+          ),
         );
 
       if (result.status === MONITOR_STATUS.DOWN) {
         // Create incident if monitor is down and no open incident exists
         if (existingIncidents.length === 0) {
           const newIncident = await this.createIncident(result);
-          console.log('Created new incident:', {
+          console.log("Created new incident:", {
             incidentId: newIncident.id,
             monitorId: result.monitorId,
             errorMessage: result.errorMessage,
@@ -194,7 +206,7 @@ export class WebhookService {
           try {
             await this.notificationService.sendDowntimeAlert(newIncident.id);
           } catch (error) {
-            console.error('Failed to send downtime alert:', error);
+            console.error("Failed to send downtime alert:", error);
           }
 
           return newIncident;
@@ -202,10 +214,15 @@ export class WebhookService {
           // Update existing incident with latest error message
           await this.updateIncident(existingIncidents[0].id, result);
         }
-      } else if (result.status === MONITOR_STATUS.UP && existingIncidents.length > 0) {
+      } else if (
+        result.status === MONITOR_STATUS.UP &&
+        existingIncidents.length > 0
+      ) {
         // Resolve incident if monitor is up and incident exists
-        const resolvedIncident = await this.resolveIncident(existingIncidents[0].id);
-        console.log('Resolved incident:', {
+        const resolvedIncident = await this.resolveIncident(
+          existingIncidents[0].id,
+        );
+        console.log("Resolved incident:", {
           incidentId: resolvedIncident.id,
           monitorId: result.monitorId,
           duration: resolvedIncident.duration,
@@ -215,7 +232,7 @@ export class WebhookService {
         try {
           await this.notificationService.sendRecoveryAlert(resolvedIncident.id);
         } catch (error) {
-          console.error('Failed to send recovery alert:', error);
+          console.error("Failed to send recovery alert:", error);
         }
 
         return resolvedIncident;
@@ -223,7 +240,7 @@ export class WebhookService {
 
       return null;
     } catch (error) {
-      console.error('Error in incident management:', {
+      console.error("Error in incident management:", {
         monitorId: result.monitorId,
         error: error.message,
       });
@@ -254,7 +271,10 @@ export class WebhookService {
   /**
    * Update existing incident with latest information
    */
-  private async updateIncident(incidentId: string, result: MonitorJobResult): Promise<void> {
+  private async updateIncident(
+    incidentId: string,
+    result: MonitorJobResult,
+  ): Promise<void> {
     await this.db
       .update(incidents)
       .set({
@@ -274,12 +294,14 @@ export class WebhookService {
       .where(eq(incidents.id, incidentId));
 
     if (incident.length === 0) {
-      throw new BadRequestException('Incident not found');
+      throw new BadRequestException("Incident not found");
     }
 
     const resolvedAt = new Date();
     const startedAt = new Date(incident[0].startedAt);
-    const duration = Math.floor((resolvedAt.getTime() - startedAt.getTime()) / 1000); // Duration in seconds
+    const duration = Math.floor(
+      (resolvedAt.getTime() - startedAt.getTime()) / 1000,
+    ); // Duration in seconds
 
     const resolvedIncident = await this.db
       .update(incidents)
@@ -300,24 +322,22 @@ export class WebhookService {
    */
   private async logMonitorCheck(result: MonitorJobResult): Promise<void> {
     try {
-      await this.db
-        .insert(monitorLogs)
-        .values({
-          id: nanoid(),
-          monitorId: result.monitorId,
-          action: 'checked',
-          details: {
-            region: result.region,
-            status: result.status,
-            responseTime: result.responseTime,
-            statusCode: result.statusCode,
-            errorMessage: result.errorMessage,
-            checkedAt: result.checkedAt,
-          },
-          createdAt: new Date(),
-        });
+      await this.db.insert(monitorLogs).values({
+        id: nanoid(),
+        monitorId: result.monitorId,
+        action: "checked",
+        details: {
+          region: result.region,
+          status: result.status,
+          responseTime: result.responseTime,
+          statusCode: result.statusCode,
+          errorMessage: result.errorMessage,
+          checkedAt: result.checkedAt,
+        },
+        createdAt: new Date(),
+      });
     } catch (error) {
-      console.error('Error logging monitor check:', {
+      console.error("Error logging monitor check:", {
         monitorId: result.monitorId,
         error: error.message,
       });
@@ -332,17 +352,17 @@ export class WebhookService {
     try {
       // Simple health check - verify database connectivity
       const testQuery = await this.db.select().from(monitors).limit(1);
-      
+
       return {
-        status: 'healthy',
+        status: "healthy",
         timestamp: new Date().toISOString(),
-        database: 'connected',
+        database: "connected",
       };
     } catch (error) {
       return {
-        status: 'unhealthy',
+        status: "unhealthy",
         timestamp: new Date().toISOString(),
-        database: 'disconnected',
+        database: "disconnected",
         error: error.message,
       };
     }
