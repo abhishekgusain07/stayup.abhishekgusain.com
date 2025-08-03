@@ -13,16 +13,15 @@ export function GlobalMonitoringMap() {
           </div>
 
           <motion.h2 
-            className="font-bold text-3xl md:text-5xl dark:text-white text-black mb-4"
+            className="font-bold text-4xl md:text-6xl dark:text-white text-black mb-6 leading-tight"
             initial={{ opacity: 0.8, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
           >
-            Monitor From{" "}
-            <span className="text-green-600 dark:text-green-400">
-              Every Corner
-            </span>{" "}
-            of the World
+            <span className="block">Global Network</span>
+            <span className="block bg-clip-text text-transparent bg-gradient-to-r from-green-600 via-blue-600 to-indigo-600 dark:from-green-400 dark:via-blue-400 dark:to-indigo-400">
+              Monitoring Excellence
+            </span>
           </motion.h2>
 
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
@@ -34,33 +33,56 @@ export function GlobalMonitoringMap() {
         </div>
 
         {/* Monitoring Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-          <div className="text-center p-4 bg-white/90 dark:bg-slate-800/90 rounded-lg border border-green-200 dark:border-green-800/30">
-            <div className="text-2xl md:text-3xl font-bold text-green-600 dark:text-green-400">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+          <motion.div 
+            className="text-center p-6 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950/30 dark:to-green-900/30 rounded-2xl border-2 border-green-200/50 dark:border-green-800/30 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
+            initial={{ opacity: 0.8, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.1, ease: "easeOut" }}
+          >
+            <div className="text-3xl md:text-4xl font-bold text-green-600 dark:text-green-400 mb-2">
               15+
             </div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-sm font-medium text-muted-foreground">
               Global Locations
             </div>
-          </div>
-          <div className="text-center p-4 bg-white/90 dark:bg-slate-800/90 rounded-lg border border-blue-200 dark:border-blue-800/30">
-            <div className="text-2xl md:text-3xl font-bold text-blue-600 dark:text-blue-400">
+          </motion.div>
+          
+          <motion.div 
+            className="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/30 rounded-2xl border-2 border-blue-200/50 dark:border-blue-800/30 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
+            initial={{ opacity: 0.8, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.2, ease: "easeOut" }}
+          >
+            <div className="text-3xl md:text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">
               30s
             </div>
-            <div className="text-sm text-muted-foreground">Check Interval</div>
-          </div>
-          <div className="text-center p-4 bg-white/90 dark:bg-slate-800/90 rounded-lg border border-purple-200 dark:border-purple-800/30">
-            <div className="text-2xl md:text-3xl font-bold text-purple-600 dark:text-purple-400">
+            <div className="text-sm font-medium text-muted-foreground">Check Interval</div>
+          </motion.div>
+          
+          <motion.div 
+            className="text-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950/30 dark:to-purple-900/30 rounded-2xl border-2 border-purple-200/50 dark:border-purple-800/30 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
+            initial={{ opacity: 0.8, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.3, ease: "easeOut" }}
+          >
+            <div className="text-3xl md:text-4xl font-bold text-purple-600 dark:text-purple-400 mb-2">
               99.9%
             </div>
-            <div className="text-sm text-muted-foreground">Uptime SLA</div>
-          </div>
-          <div className="text-center p-4 bg-white/90 dark:bg-slate-800/90 rounded-lg border border-orange-200 dark:border-orange-800/30">
-            <div className="text-2xl md:text-3xl font-bold text-orange-600 dark:text-orange-400">
+            <div className="text-sm font-medium text-muted-foreground">Uptime SLA</div>
+          </motion.div>
+          
+          <motion.div 
+            className="text-center p-6 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-950/30 dark:to-orange-900/30 rounded-2xl border-2 border-orange-200/50 dark:border-orange-800/30 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
+            initial={{ opacity: 0.8, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.4, ease: "easeOut" }}
+          >
+            <div className="text-3xl md:text-4xl font-bold text-orange-600 dark:text-orange-400 mb-2">
               &lt;1s
             </div>
-            <div className="text-sm text-muted-foreground">Alert Speed</div>
-          </div>
+            <div className="text-sm font-medium text-muted-foreground">Alert Speed</div>
+          </motion.div>
         </div>
 
         {/* World Map */}

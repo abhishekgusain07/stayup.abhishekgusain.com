@@ -4,13 +4,14 @@ const fs = require('fs');
 const path = require('path');
 
 /**
+ * 
  * Script to sync shared types from master file to all applications
  * This maintains consistency across frontend, backend, and lambda apps
  */
 
 const MASTER_TYPES_FILE = path.join(__dirname, '../shared/types.ts');
 const TARGET_LOCATIONS = [
-  path.join(__dirname, '../frontend/src/types/shared.ts'),
+  path.join(__dirname, '../frontendui/src/types/shared.ts'),
   path.join(__dirname, '../backend/src/types/shared.ts'),
   path.join(__dirname, '../lambda/src/types/shared.ts')
 ];
