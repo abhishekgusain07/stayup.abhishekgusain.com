@@ -118,9 +118,9 @@ export default function Home() {
           <div className="relative flex flex-col items-center text-center max-w-5xl mx-auto">
             <motion.div 
               className="inline-flex items-center gap-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-3 py-1 rounded-full text-sm font-medium mb-6"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0.9, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
             >
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
               99.9% Uptime Guaranteed
@@ -128,9 +128,9 @@ export default function Home() {
 
             <motion.h1 
               className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight mb-6 md:mb-8 leading-tight"
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0.9, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
             >
               <span className="block text-gray-900 dark:text-white">
                 Empowering Reliability
@@ -142,9 +142,9 @@ export default function Home() {
 
             <motion.p 
               className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-3xl mb-8 md:mb-10 leading-relaxed px-4 sm:px-0"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0.9, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.6, ease: "easeOut" }}
+              transition={{ duration: 0.15, ease: "easeOut" }}
             >
               {isWaitlistMode()
                 ? "We're building the most reliable uptime monitoring platform. Join the waitlist to be among the first to experience next-generation website monitoring."
@@ -156,7 +156,7 @@ export default function Home() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.8, ease: "easeOut" }}
+                transition={{ duration: 0.3, delay: 0.3, ease: "easeOut" }}
                 className="mb-12 md:mb-16"
               >
                 <WaitlistForm />
@@ -166,7 +166,7 @@ export default function Home() {
                 className="flex flex-col sm:flex-row gap-4 sm:gap-6 mb-12 md:mb-16 px-4 sm:px-0"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.8, ease: "easeOut" }}
+                transition={{ duration: 0.3, delay: 0.3, ease: "easeOut" }}
               >
                 <Link
                   href="/sign-up"
@@ -202,7 +202,7 @@ export default function Home() {
                 className="font-bold text-3xl md:text-5xl dark:text-white text-black mb-4"
                 initial={{ opacity: 0.8, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
               >
                 Real-Time{" "}
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400">
@@ -221,7 +221,7 @@ export default function Home() {
               className="w-full max-w-6xl mx-auto bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border-2 border-gray-200/50 dark:border-gray-700/50 rounded-2xl shadow-2xl p-8"
               initial={{ opacity: 0, y: 30, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+              transition={{ duration: 0.4, delay: 0.1, ease: "easeOut" }}
             >
               <div className="flex items-center gap-3 mb-8">
                 <div className="w-4 h-4 bg-green-500 rounded-full animate-pulse" />
