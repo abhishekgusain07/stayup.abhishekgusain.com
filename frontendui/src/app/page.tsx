@@ -115,89 +115,118 @@ export default function Home() {
         onLinkClick={handleFeedbackClick}
       /> */}
       <NavbarDemo>
-        {/* Hero Section with Integrated Map */}
-        <section className="relative pt-16 pb-8 px-4 md:px-8 lg:px-16 overflow-hidden">
+        {/* Hero Section */}
+        <section className="relative py-20 px-4 md:px-8 lg:px-16 text-center">
           {/* Hero Content */}
-          <div className="relative flex flex-col items-center text-center max-w-5xl mx-auto mb-8">
+          <div className="max-w-4xl mx-auto mb-16">
             <motion.div 
-              className="inline-flex items-center gap-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-3 py-1 rounded-full text-sm font-medium mb-6"
-              initial={{ opacity: 0.9, y: 10 }}
+              className="inline-flex items-center gap-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-4 py-2 rounded-full text-sm font-medium mb-8"
+              initial={{ opacity: 0.9, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
             >
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-              99.9% Uptime Guaranteed
+              99.9% Uptime Guaranteed • Real-time • Global Coverage
             </motion.div>
 
             <motion.h1 
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight mb-6 leading-tight"
-              initial={{ opacity: 0.9, y: 10 }}
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-8 leading-[1.1]"
+              initial={{ opacity: 0.9, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
+              transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
             >
-              <span className="block text-gray-900 dark:text-white">
-                Global Network
+              <span className="block text-gray-900 dark:text-white mb-2">
+                Global uptime
               </span>
-              <span className="block mt-1 md:mt-2 bg-clip-text text-transparent bg-gradient-to-r from-green-600 via-blue-600 to-indigo-600 dark:from-green-400 dark:via-blue-400 dark:to-indigo-400">
-                Monitoring Excellence
+              <span className="block bg-clip-text text-transparent bg-gradient-to-r from-green-600 via-blue-600 to-indigo-600 dark:from-green-400 dark:via-blue-400 dark:to-indigo-400">
+                monitoring for devs
               </span>
             </motion.h1>
 
             <motion.p 
-              className="text-lg sm:text-xl text-muted-foreground max-w-3xl mb-8 leading-relaxed px-4 sm:px-0"
-              initial={{ opacity: 0.9, y: 10 }}
+              className="text-xl sm:text-2xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed"
+              initial={{ opacity: 0.9, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.15, ease: "easeOut" }}
+              transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
             >
               {isWaitlistMode()
-                ? "Building the most reliable uptime monitoring platform. Join the waitlist for early access."
-                : "Monitor from 15+ global locations. See performance from your users' perspective."
+                ? "Track your websites, not downtime. Get fast, accurate monitoring with zero false alerts and 100% reliability guarantee."
+                : "Track your websites, not downtime. Get fast, accurate monitoring with zero false alerts and 100% reliability guarantee."
               }
             </motion.p>
 
-            {isWaitlistMode() ? (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.3, ease: "easeOut" }}
-                className="mb-8"
-              >
-                <WaitlistForm />
-              </motion.div>
-            ) : (
+            {!isWaitlistMode() && (
               <motion.div 
-                className="flex flex-col sm:flex-row gap-4 sm:gap-6 mb-8 px-4 sm:px-0"
+                className="flex flex-col sm:flex-row gap-4 justify-center mb-16"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.3, ease: "easeOut" }}
+                transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
               >
                 <Link
                   href="/sign-up"
-                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 sm:px-10 py-4 sm:py-5 rounded-xl font-semibold text-base sm:text-lg shadow-xl shadow-blue-500/20 hover:shadow-2xl hover:shadow-blue-500/30 transition-all transform hover:-translate-y-0.5 text-center"
+                  className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white px-8 py-4 rounded-lg font-semibold text-lg shadow-lg shadow-green-500/20 hover:shadow-xl hover:shadow-green-500/30 transition-all transform hover:-translate-y-0.5"
                 >
                   Start Monitoring
                 </Link>
                 <Link
                   href="/dashboard"
-                  className="border-2 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 px-8 sm:px-10 py-4 sm:py-5 rounded-xl font-semibold text-base sm:text-lg transition-all hover:bg-gray-50 dark:hover:bg-gray-800/50 text-center"
+                  className="border-2 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 px-8 py-4 rounded-lg font-semibold text-lg transition-all hover:bg-gray-50 dark:hover:bg-gray-800/50"
                 >
-                  Dashboard Portal
+                  View Dashboard
                 </Link>
+              </motion.div>
+            )}
+
+            {isWaitlistMode() && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
+                className="mb-16"
+              >
+                <WaitlistForm />
               </motion.div>
             )}
           </div>
 
-          {/* World Map - Half visible on front screen */}
-          <div className="h-[50vh] max-w-7xl mx-auto">
-            <motion.div 
-              className="relative h-full"
-              initial={{ opacity: 0.8, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3, delay: 0.4, ease: "easeOut" }}
-            >
-              <GlobalMonitoringMap />
-            </motion.div>
-          </div>
+          {/* Dashboard Preview - Large and Prominent */}
+          <motion.div 
+            className="max-w-7xl mx-auto"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
+          >
+            <div className="relative">
+              {/* Dashboard Container with Border */}
+              <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-2xl overflow-hidden">
+                {/* Dashboard Header */}
+                <div className="bg-gray-50 dark:bg-gray-800 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg flex items-center justify-center">
+                        <div className="w-4 h-4 bg-white rounded-sm"></div>
+                      </div>
+                      <span className="font-semibold text-gray-900 dark:text-white">StayUp Dashboard</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-full bg-gray-300 dark:bg-gray-600"></div>
+                      <div className="w-6 h-6 rounded-full bg-gray-300 dark:bg-gray-600"></div>
+                      <div className="w-6 h-6 rounded-full bg-green-500"></div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Dashboard Content - World Map */}
+                <div className="h-[600px] lg:h-[700px] relative">
+                  <GlobalMonitoringMap />
+                </div>
+              </div>
+
+              {/* Floating elements to enhance the preview */}
+              <div className="absolute -top-4 -right-4 w-16 h-16 bg-green-500/20 rounded-full blur-xl"></div>
+              <div className="absolute -bottom-4 -left-4 w-20 h-20 bg-blue-500/20 rounded-full blur-xl"></div>
+            </div>
+          </motion.div>
         </section>
 
         {/* Monitoring Stats Section */}
