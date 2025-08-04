@@ -1,6 +1,7 @@
 "use client";
 import { motion } from "motion/react";
 import { WorldMap } from "./ui/world-map";
+import { BenefitsHyper } from "./ui/Benifits";
 
 export function GlobalMonitoringMap() {
   return (
@@ -160,66 +161,7 @@ export function GlobalMonitoringMap() {
         </motion.div>
 
         {/* Benefits */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-          <motion.div
-            className="group relative rounded-2xl bg-white/90 dark:bg-slate-800/90 border border-green-200/50 dark:border-green-800/30 p-8 text-center shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-            initial={{ opacity: 0.8, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-          >
-            <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-              <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-                <div className="w-4 h-4 bg-green-500 rounded-full animate-pulse" />
-              </div>
-            </div>
-
-            <h3 className="font-bold text-xl mb-4 text-gray-900 dark:text-white">
-              Real-Time Monitoring
-            </h3>
-            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-              Continuous monitoring from multiple locations ensures we catch
-              downtime instantly, no matter where your users are.
-            </p>
-          </motion.div>
-
-          <motion.div
-            className="group relative rounded-2xl bg-white/90 dark:bg-slate-800/90 border border-blue-200/50 dark:border-blue-800/30 p-8 text-center shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-            initial={{ opacity: 0.8, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-          >
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-              <span className="text-2xl">🌐</span>
-            </div>
-
-            <h3 className="font-bold text-xl mb-4 text-gray-900 dark:text-white">
-              Global Perspective
-            </h3>
-            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-              See how your website performs from different continents and
-              identify regional performance issues.
-            </p>
-          </motion.div>
-
-          <motion.div
-            className="group relative rounded-2xl bg-white/90 dark:bg-slate-800/90 border border-purple-200/50 dark:border-purple-800/30 p-8 text-center shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-            initial={{ opacity: 0.8, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-          >
-            <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-              <span className="text-2xl">⚡</span>
-            </div>
-
-            <h3 className="font-bold text-xl mb-4 text-gray-900 dark:text-white">
-              Instant Alerts
-            </h3>
-            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-              Get notified within seconds when any monitoring location detects
-              an issue with your website.
-            </p>
-          </motion.div>
-        </div>
+        <BenefitsHyper />
       </div>
     </div>
   );
