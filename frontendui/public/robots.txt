@@ -1,0 +1,22 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://stayup.abhishekgusain.com/sitemap.xml
+
+# Block admin and API routes
+Disallow: /api/
+Disallow: /admin/
+Disallow: /_next/
+Disallow: /dashboard/
+Disallow: /onboarding/
+
+# Allow important pages for SEO
+Allow: /
+Allow: /pricing
+Allow: /features
+Allow: /sign-up
+Allow: /sign-in
+
+# Crawl delay (optional)
+Crawl-delay: 1

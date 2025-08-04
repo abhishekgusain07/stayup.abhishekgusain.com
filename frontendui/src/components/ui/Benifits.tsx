@@ -16,15 +16,15 @@ type Theme = {
 
 const themes: Theme[] = [
   {
-    glowFrom: "from-emerald-400/25",
-    glowVia: "via-emerald-500/15",
-    glowTo: "to-green-700/10",
-    ringFrom: "from-emerald-400",
-    ringTo: "to-teal-500",
-    badgeFrom: "from-green-400",
-    badgeTo: "to-emerald-600",
-    dot: "bg-emerald-500",
-    accentText: "text-emerald-400",
+    glowFrom: "from-emerald-300/20",
+    glowVia: "via-emerald-400/12",
+    glowTo: "to-green-500/8",
+    ringFrom: "from-emerald-300",
+    ringTo: "to-teal-400",
+    badgeFrom: "from-green-300",
+    badgeTo: "to-emerald-500",
+    dot: "bg-emerald-400",
+    accentText: "text-emerald-300",
   },
   {
     glowFrom: "from-sky-400/25",
@@ -305,7 +305,7 @@ export const BenefitsHyper: FC = () => {
           <NeonCard
             key={b.title}
             index={i}
-            theme={themes[i]}
+            theme={themes[0]}
             title={b.title}
             description={b.description}
             footer={b.footer}

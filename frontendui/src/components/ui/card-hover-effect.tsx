@@ -57,7 +57,7 @@ export const HoverEffect = ({
             <AnimatePresence>
               {hoveredIndex === idx && (
                 <motion.span
-                  className="absolute inset-0 h-full w-full bg-sky-100/80 dark:bg-sky-900/30 block rounded-3xl shadow-lg shadow-sky-200/50 dark:shadow-sky-800/30"
+                  className="absolute inset-0 h-full w-full bg-green-100/80 dark:bg-green-900/30 block rounded-3xl shadow-lg shadow-green-200/50 dark:shadow-green-800/30"
                   layoutId="hoverBackground"
                   initial={{ opacity: 0 }}
                   animate={{
@@ -73,8 +73,8 @@ export const HoverEffect = ({
             </AnimatePresence>
             <Card>
               <div className="flex items-center mb-2">
-                <div className="p-2 rounded-full bg-sky-100 dark:bg-sky-900/50 mr-3">
-                  <IconComponent className="h-5 w-5 text-sky-600 dark:text-sky-400" />
+                <div className="p-2 rounded-full bg-green-100 dark:bg-green-900/50 mr-3">
+                  <IconComponent className="h-5 w-5 text-green-600 dark:text-green-400" />
                 </div>
               </div>
               <CardTitle>{item.title}</CardTitle>
@@ -97,7 +97,7 @@ export const Card = ({
   return (
     <div
       className={cn(
-        "rounded-2xl h-full w-full p-4 overflow-hidden bg-slate-100 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-md shadow-sky-100/40 dark:shadow-sky-900/20 group-hover:shadow-lg group-hover:shadow-sky-200/50 dark:group-hover:shadow-sky-800/30 group-hover:border-sky-200 dark:group-hover:border-sky-700 relative z-20 transform transition-all duration-300 ease-in-out group-hover:-translate-y-1",
+        "rounded-2xl h-full w-full p-4 overflow-hidden bg-slate-100 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-md shadow-green-100/40 dark:shadow-green-900/20 group-hover:shadow-lg group-hover:shadow-green-200/50 dark:group-hover:shadow-green-800/30 group-hover:border-green-200 dark:group-hover:border-green-700 relative z-20 transform transition-all duration-300 ease-in-out group-hover:-translate-y-1",
         className
       )}
     >

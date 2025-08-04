@@ -25,11 +25,8 @@ export function GlobalMonitoringMap() {
             </span>
           </motion.h2>
 
-          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Our distributed monitoring network spans across 6 continents,
-            providing comprehensive uptime monitoring from multiple geographic
-            locations. Get real-time insights into your website's performance
-            from your users' perspective.
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+            Monitor from 15+ global locations. See performance from your users' perspective.
           </p>
         </div>
 
@@ -50,36 +47,36 @@ export function GlobalMonitoringMap() {
           </motion.div>
           
           <motion.div 
-            className="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/30 rounded-2xl border-2 border-blue-200/50 dark:border-blue-800/30 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
+            className="text-center p-6 bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-950/30 dark:to-emerald-900/30 rounded-2xl border-2 border-emerald-200/50 dark:border-emerald-800/30 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
             initial={{ opacity: 0.8, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.2, ease: "easeOut" }}
           >
-            <div className="text-3xl md:text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">
+            <div className="text-3xl md:text-4xl font-bold text-emerald-600 dark:text-emerald-400 mb-2">
               30s
             </div>
             <div className="text-sm font-medium text-muted-foreground">Check Interval</div>
           </motion.div>
           
           <motion.div 
-            className="text-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950/30 dark:to-purple-900/30 rounded-2xl border-2 border-purple-200/50 dark:border-purple-800/30 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
+            className="text-center p-6 bg-gradient-to-br from-teal-50 to-teal-100 dark:from-teal-950/30 dark:to-teal-900/30 rounded-2xl border-2 border-teal-200/50 dark:border-teal-800/30 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
             initial={{ opacity: 0.8, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.3, ease: "easeOut" }}
           >
-            <div className="text-3xl md:text-4xl font-bold text-purple-600 dark:text-purple-400 mb-2">
+            <div className="text-3xl md:text-4xl font-bold text-teal-600 dark:text-teal-400 mb-2">
               99.9%
             </div>
             <div className="text-sm font-medium text-muted-foreground">Uptime SLA</div>
           </motion.div>
           
           <motion.div 
-            className="text-center p-6 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-950/30 dark:to-orange-900/30 rounded-2xl border-2 border-orange-200/50 dark:border-orange-800/30 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
+            className="text-center p-6 bg-gradient-to-br from-cyan-50 to-cyan-100 dark:from-cyan-950/30 dark:to-cyan-900/30 rounded-2xl border-2 border-cyan-200/50 dark:border-cyan-800/30 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
             initial={{ opacity: 0.8, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.4, ease: "easeOut" }}
           >
-            <div className="text-3xl md:text-4xl font-bold text-orange-600 dark:text-orange-400 mb-2">
+            <div className="text-3xl md:text-4xl font-bold text-cyan-600 dark:text-cyan-400 mb-2">
               &lt;1s
             </div>
             <div className="text-sm font-medium text-muted-foreground">Alert Speed</div>
