@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     description: "Monitor your websites 24/7 with StayUp's global uptime monitoring. Get instant alerts, performance analytics, and status pages. 99.9% uptime guarantee.",
     images: [
       {
-        url: "/og-image.png",
+        url: "/banner.png",
         width: 1200,
         height: 630,
         alt: "StayUp - Website Uptime Monitoring Platform",
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "StayUp - Global Website Uptime Monitoring",
     description: "Monitor your websites 24/7 with global uptime monitoring. Get instant alerts and performance analytics. 99.9% uptime guarantee.",
-    images: ["/og-image.png"],
+    images: ["/banner.png"],
     creator: "@stayup",
     site: "@stayup",
   },

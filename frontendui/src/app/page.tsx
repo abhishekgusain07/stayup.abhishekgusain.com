@@ -16,6 +16,7 @@ import { useUser } from "@/hooks/useUser";
 import { GlobalMonitoringMap } from "@/components/global-monitoring-map";
 import { isWaitlistMode } from "@/utils/featureFlags";
 import { WaitlistForm } from "@/components/waitlist-signup";
+import { BenefitsHyper } from "@/components/ui/Benifits";
 
 export default function Home() {
   const [showAnnouncement, setShowAnnouncement] = useState(true);
@@ -114,10 +115,10 @@ export default function Home() {
         onLinkClick={handleFeedbackClick}
       /> */}
       <NavbarDemo>
-        {/* Hero Section */}
-        <section className="relative pt-16 pb-16 px-4 md:px-8 lg:px-16 overflow-hidden">
-
-          <div className="relative flex flex-col items-center text-center max-w-5xl mx-auto">
+        {/* Hero Section with Integrated Map */}
+        <section className="relative pt-16 pb-8 px-4 md:px-8 lg:px-16 overflow-hidden">
+          {/* Hero Content */}
+          <div className="relative flex flex-col items-center text-center max-w-5xl mx-auto mb-8">
             <motion.div 
               className="inline-flex items-center gap-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-3 py-1 rounded-full text-sm font-medium mb-6"
               initial={{ opacity: 0.9, y: 10 }}
@@ -129,28 +130,28 @@ export default function Home() {
             </motion.div>
 
             <motion.h1 
-              className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight mb-6 md:mb-8 leading-tight"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight mb-6 leading-tight"
               initial={{ opacity: 0.9, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, ease: "easeOut" }}
             >
               <span className="block text-gray-900 dark:text-white">
-                Empowering Reliability
+                Global Network
               </span>
               <span className="block mt-1 md:mt-2 bg-clip-text text-transparent bg-gradient-to-r from-green-600 via-blue-600 to-indigo-600 dark:from-green-400 dark:via-blue-400 dark:to-indigo-400">
-                Through Global Monitoring
+                Monitoring Excellence
               </span>
             </motion.h1>
 
             <motion.p 
-              className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-3xl mb-8 md:mb-10 leading-relaxed px-4 sm:px-0"
+              className="text-lg sm:text-xl text-muted-foreground max-w-3xl mb-8 leading-relaxed px-4 sm:px-0"
               initial={{ opacity: 0.9, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.15, ease: "easeOut" }}
             >
               {isWaitlistMode()
                 ? "Building the most reliable uptime monitoring platform. Join the waitlist for early access."
-                : "Global uptime monitoring that actually works. Keep your websites online 24/7."
+                : "Monitor from 15+ global locations. See performance from your users' perspective."
               }
             </motion.p>
 
@@ -159,13 +160,13 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.3, ease: "easeOut" }}
-                className="mb-12 md:mb-16"
+                className="mb-8"
               >
                 <WaitlistForm />
               </motion.div>
             ) : (
               <motion.div 
-                className="flex flex-col sm:flex-row gap-4 sm:gap-6 mb-12 md:mb-16 px-4 sm:px-0"
+                className="flex flex-col sm:flex-row gap-4 sm:gap-6 mb-8 px-4 sm:px-0"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.3, ease: "easeOut" }}
@@ -184,12 +185,95 @@ export default function Home() {
                 </Link>
               </motion.div>
             )}
+          </div>
 
+          {/* World Map - Half visible on front screen */}
+          <div className="h-[50vh] max-w-7xl mx-auto">
+            <motion.div 
+              className="relative h-full"
+              initial={{ opacity: 0.8, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, delay: 0.4, ease: "easeOut" }}
+            >
+              <GlobalMonitoringMap />
+            </motion.div>
           </div>
         </section>
 
-        {/* Global Monitoring Map Section */}
-        <GlobalMonitoringMap />
+        {/* Monitoring Stats Section */}
+        <section className="py-16 px-4 md:px-8 lg:px-16 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-3 py-1 rounded-full text-sm font-medium mb-6">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                Global Monitoring Network
+              </div>
+              <h2 className="text-2xl md:text-3xl font-bold mb-4">
+                Monitoring Performance
+              </h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Real-time monitoring with industry-leading performance metrics
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              <motion.div 
+                className="text-center p-6 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950/30 dark:to-green-900/30 rounded-2xl border-2 border-green-200/50 dark:border-green-800/30 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
+                initial={{ opacity: 0.8, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.1, ease: "easeOut" }}
+              >
+                <div className="text-3xl md:text-4xl font-bold text-green-600 dark:text-green-400 mb-2">
+                  15+
+                </div>
+                <div className="text-sm font-medium text-muted-foreground">
+                  Global Locations
+                </div>
+              </motion.div>
+              
+              <motion.div 
+                className="text-center p-6 bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-950/30 dark:to-emerald-900/30 rounded-2xl border-2 border-emerald-200/50 dark:border-emerald-800/30 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
+                initial={{ opacity: 0.8, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.2, ease: "easeOut" }}
+              >
+                <div className="text-3xl md:text-4xl font-bold text-emerald-600 dark:text-emerald-400 mb-2">
+                  30s
+                </div>
+                <div className="text-sm font-medium text-muted-foreground">Check Interval</div>
+              </motion.div>
+              
+              <motion.div 
+                className="text-center p-6 bg-gradient-to-br from-teal-50 to-teal-100 dark:from-teal-950/30 dark:to-teal-900/30 rounded-2xl border-2 border-teal-200/50 dark:border-teal-800/30 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
+                initial={{ opacity: 0.8, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.3, ease: "easeOut" }}
+              >
+                <div className="text-3xl md:text-4xl font-bold text-teal-600 dark:text-teal-400 mb-2">
+                  99.9%
+                </div>
+                <div className="text-sm font-medium text-muted-foreground">Uptime SLA</div>
+              </motion.div>
+              
+              <motion.div 
+                className="text-center p-6 bg-gradient-to-br from-cyan-50 to-cyan-100 dark:from-cyan-950/30 dark:to-cyan-900/30 rounded-2xl border-2 border-cyan-200/50 dark:border-cyan-800/30 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
+                initial={{ opacity: 0.8, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.4, ease: "easeOut" }}
+              >
+                <div className="text-3xl md:text-4xl font-bold text-cyan-600 dark:text-cyan-400 mb-2">
+                  &lt;1s
+                </div>
+                <div className="text-sm font-medium text-muted-foreground">Alert Speed</div>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* Benefits Section */}
+        <section className="py-16 px-4 md:px-8 lg:px-16">
+          <BenefitsHyper />
+        </section>
 
         {/* Features Section */}
         <section
