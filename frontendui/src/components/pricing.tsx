@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { CheckCircle2, DollarSign, Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 
 import axios from "axios";
@@ -49,8 +49,8 @@ const PricingHeader = ({
   subtitle: string;
 }) => (
   <div className="text-center mb-10">
-    {/* Pill badge */}
-    <div className="mx-auto w-fit rounded-full border border-primary/20 bg-primary/10 px-4 py-1 mb-6">
+    {/* Badge */}
+    <div className="mx-auto w-fit rounded-full border border-primary/20 bg-primary/10 px-4 py-1 mb-6 backdrop-blur">
       <div className="flex items-center gap-2 text-sm font-medium text-primary">
         <DollarSign className="h-4 w-4" />
         <span>Pricing</span>
@@ -80,6 +80,34 @@ const PricingSwitch = ({ onSwitch }: PricingSwitchProps) => (
   </div>
 );
 
+const PriceFlip = ({
+  isYearly,
+  monthly,
+  yearly,
+}: {
+  isYearly: boolean | undefined;
+  monthly?: number;
+  yearly?: number;
+}) => {
+  return (
+    <div className="relative h-[42px] w-full overflow-hidden">
+      <motion.div
+        key={isYearly ? "yearly" : "monthly"}
+        initial={{ y: 24, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: -24, opacity: 0 }}
+        transition={{ duration: 0.18, ease: "easeOut" }}
+        className="absolute inset-0 flex items-baseline gap-1"
+      >
+        <span className="text-4xl font-bold">
+          ${isYearly ? yearly : monthly}
+        </span>
+        <span className="text-muted-foreground">/mo</span>
+      </motion.div>
+    </div>
+  );
+};
+
 const PricingCard = ({
   user,
   handleCheckout,
@@ -97,70 +125,129 @@ const PricingCard = ({
 }: PricingCardProps) => {
   const router = useRouter();
 
+  // Style tokens per variant
+  const theme = useMemo(() => {
+    if (popular)
+      return {
+        glow: "from-violet-500/20 via-fuchsia-500/15 to-indigo-500/10",
+        ring: "from-fuchsia-400 to-indigo-400",
+        button:
+          "bg-gradient-to-r from-fuchsia-500 to-indigo-500 text-white hover:opacity-95",
+      };
+    if (exclusive)
+      return {
+        glow: "from-amber-500/20 via-orange-500/15 to-rose-500/10",
+        ring: "from-amber-400 to-rose-400",
+        button:
+          "bg-gradient-to-r from-amber-500 to-rose-500 text-white hover:opacity-95",
+      };
+    return {
+        glow: "from-emerald-500/20 via-teal-500/15 to-cyan-500/10",
+        ring: "from-emerald-400 to-teal-400",
+        button:
+          "bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:opacity-95",
+      };
+  }, [popular, exclusive]);
+
   return (
-    <Card
-      className={cn(
-        "w-full max-w-sm flex flex-col justify-between px-2 py-1 backdrop-blur-sm transition-all duration-200 hover:shadow-lg h-full",
-        {
-          "relative border-2 border-primary": popular,
-          relative: exclusive,
-        }
-      )}
-    >
-      {popular && (
-        <div className="absolute -top-3 left-0 right-0 mx-auto w-fit rounded-full bg-primary px-3 py-1">
-          <p className="text-sm font-medium text-white">Most Popular</p>
-        </div>
-      )}
+    <div className="group relative h-full">
+      {/* Soft ambient glow */}
+      <div
+        className={cn(
+          "pointer-events-none absolute -inset-3 -z-10 rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200",
+          "bg-gradient-to-br",
+          theme.glow
+        )}
+        aria-hidden
+      />
 
-      {exclusive && (
-        <div className="absolute -top-3 left-0 right-0 mx-auto w-fit rounded-full bg-primary px-3 py-1">
-          <p className="text-sm font-medium text-white">Enterprise</p>
-        </div>
-      )}
+      <Card
+        className={cn(
+          "relative h-full w-full max-w-sm flex flex-col justify-between px-0 py-0 transition-all duration-200 hover:shadow-xl rounded-2xl overflow-hidden",
+          "border border-white/30 dark:border-white/10 bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl",
+          "shadow-[0_8px_28px_rgba(0,0,0,0.08)]",
+          popular && "scale-[1.02]"
+        )}
+      >
+        {/* Neon ring edge */}
+        <div
+          className={cn(
+            "pointer-events-none absolute inset-0 rounded-2xl opacity-70 mix-blend-soft-light",
+            "bg-gradient-to-br",
+            theme.ring
+          )}
+          aria-hidden
+        />
+        {/* Hairline highlights */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/50 dark:via-white/10 to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-px bg-gradient-to-b from-transparent via-white/40 dark:via-white/10 to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-white/40 dark:via-white/10 to-transparent" />
 
-      <div>
-        <CardHeader className="space-y-2 pb-4">
-          <CardTitle className="text-xl">{title}</CardTitle>
-          <CardDescription>{description}</CardDescription>
-        </CardHeader>
-
-        <CardContent className="pb-4">
-          <div className="flex items-baseline gap-1">
-            <span className="text-4xl font-bold">
-              ${isYearly ? yearlyPrice : monthlyPrice}
-            </span>
-            <span className="text-muted-foreground">/mo</span>
-          </div>
-
-          <div className="mt-6 space-y-2">
-            {features.map((feature) => (
-              <div key={feature} className="flex gap-2">
-                <CheckCircle2 className="h-5 w-5 text-green-600" />
-                <p className="text-muted-foreground">{feature}</p>
+        <div className="p-6 flex flex-col h-full">
+          {/* Top ribbon */}
+          {(popular || exclusive) && (
+            <div className="mb-3 flex justify-center">
+              <div className={cn(
+                "inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium border backdrop-blur",
+                popular
+                  ? "bg-fuchsia-500/15 text-fuchsia-600 dark:text-fuchsia-300 border-fuchsia-500/30"
+                  : "bg-amber-500/15 text-amber-600 dark:text-amber-300 border-amber-500/30"
+              )}>
+                {popular ? (
+                  <>
+                    <Rocket className="h-4 w-4" />
+                    Most Popular
+                  </>
+                ) : (
+                  <>
+                    <Rocket className="h-4 w-4" />
+                    Enterprise
+                  </>
+                )}
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </div>
+            </div>
+          )}
 
-      <CardFooter className="mt-auto">
-        <Button
-          onClick={() => {
-            if (!user) {
-              router.push("/sign-in");
-              return;
-            }
-            handleCheckout(isYearly ? priceIdYearly : priceIdMonthly, true);
-          }}
-          className={cn("w-full", {
-            "bg-primary hover:bg-primary/90": popular || exclusive,
-          })}
-        >
-          {actionLabel}
-        </Button>
-      </CardFooter>
-    </Card>
+          <CardHeader className="space-y-2 pb-4 p-0">
+            <CardTitle className="text-xl">{title}</CardTitle>
+            <CardDescription>{description}</CardDescription>
+          </CardHeader>
+
+          <CardContent className="pb-4 p-0 pt-4">
+            <PriceFlip isYearly={isYearly} monthly={monthlyPrice} yearly={yearlyPrice} />
+
+            <div className="mt-6 space-y-2">
+              {features.map((feature) => (
+                <div key={feature} className="flex gap-2 items-start">
+                  <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0" />
+                  <p className="text-muted-foreground">{feature}</p>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+
+          <div className="flex-1" />
+
+          <CardFooter className="mt-6 p-0">
+            <Button
+              onClick={() => {
+                if (!user) {
+                  router.push("/sign-in");
+                  return;
+                }
+                handleCheckout(isYearly ? priceIdYearly : priceIdMonthly, true);
+              }}
+              className={cn(
+                "w-full transition-transform duration-150 hover:scale-[1.01]",
+                (popular || exclusive) ? theme.button : "bg-primary hover:bg-primary/90"
+              )}
+            >
+              {actionLabel}
+            </Button>
+          </CardFooter>
+        </div>
+      </Card>
+    </div>
   );
 };
 
@@ -177,21 +264,16 @@ export default function Pricing() {
 
   const handleCheckout = async (priceId: string, subscription: boolean) => {
     try {
-      const { data } = await axios.post(
-        `/api/payments/create-checkout-session`,
-        {
-          userId: user?.id,
-          email: user?.email,
-          priceId,
-          subscription,
-        }
-      );
+      const { data } = await axios.post(`/api/payments/create-checkout-session`, {
+        userId: user?.id,
+        email: user?.email,
+        priceId,
+        subscription,
+      });
 
       if (data.sessionId) {
         const stripe = await stripePromise;
-        const response = await stripe?.redirectToCheckout({
-          sessionId: data.sessionId,
-        });
+        const response = await stripe?.redirectToCheckout({ sessionId: data.sessionId });
         return response;
       } else {
         console.error("Failed to create checkout session");
@@ -210,8 +292,7 @@ export default function Pricing() {
       title: "Starter",
       monthlyPrice: 29,
       yearlyPrice: 24,
-      description:
-        "Perfect for indie developers launching their first SaaS project.",
+      description: "Perfect for indie developers launching their first SaaS project.",
       features: [
         "All core features",
         "Authentication & user management",
@@ -263,40 +344,41 @@ export default function Pricing() {
   ];
 
   return (
-    <section className="px-4 py-10" id="pricing">
+    <section className="px-4 py-12" id="pricing">
       <div className="max-w-7xl mx-auto">
         <PricingHeader
           title="Simple, Transparent Pricing"
-          subtitle="Launch your SaaS product faster with our complete template. All plans include the core infrastructure you need."
+          subtitle="Launch your SaaS faster with plans that scale as you grow."
         />
+
+        {/* Toggle */}
         <PricingSwitch onSwitch={togglePricingPeriod} />
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, staggerChildren: 0.1 }}
-          viewport={{ once: true }}
-          className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mt-10"
+
+        {/* Ambient section glow */}
+        <div
+          aria-hidden
+          className="relative mx-auto max-w-6xl mt-6"
         >
-          {plans.map((plan, index) => (
-            <motion.div
+          <div className="pointer-events-none absolute -inset-x-8 -top-6 h-24 rounded-full bg-gradient-to-r from-emerald-400/10 via-fuchsia-400/10 to-indigo-400/10 blur-2xl" />
+        </div>
+
+        {/* Cards grid */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-10 items-stretch">
+          {plans.map((plan) => (
+            <PricingCard
               key={plan.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.5,
-                delay: index * 0.1,
-              }}
-              viewport={{ once: true }}
-            >
-              <PricingCard
-                user={user}
-                handleCheckout={handleCheckout}
-                {...plan}
-                isYearly={isYearly}
-              />
-            </motion.div>
+              user={user}
+              handleCheckout={handleCheckout}
+              {...plan}
+              isYearly={isYearly}
+            />
           ))}
-        </motion.div>
+        </div>
+
+        {/* Fine print */}
+        <div className="mt-8 text-center text-xs text-muted-foreground">
+          Cancel anytime. VAT may apply based on your location.
+        </div>
       </div>
     </section>
   );
