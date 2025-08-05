@@ -9,7 +9,10 @@ export const authClient = createAuthClient({
     ? typeof window !== "undefined"
       ? window.location.origin
       : "" // In production, use current origin
-    : "http://localhost:3000", // In development, use localhost
+    : "http://localhost:3000", // Back to port 3000 since server is running there now
+  fetchOptions: {
+    timeout: 10000, // 10 second timeout for faster failures
+  },
 });
 
-export const { signIn, signUp, useSession } = createAuthClient();
+export const { signIn, signUp, useSession } = authClient;
